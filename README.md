@@ -1,4 +1,4 @@
-# Male Carer Stage Checker
+# CareStage
 
 A mobile-first web tool for a UK charity supporting unpaid male carers. Helps men understand where they are in their caring journey through a short 7-question check, then maps them to one of 6 support stages.
 
