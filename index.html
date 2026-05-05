@@ -6,14 +6,20 @@
   <meta name="robots" content="noindex" />
   <meta name="description" content="A free, anonymous tool from Carers Trust Solihull helping carers understand where they are in their caring journey and what support is available." />
   <meta name="author" content="Carers Trust Solihull" />
-  <meta property="og:title" content="Male Carer Stage Checker" />
+  <meta property="og:title" content="CareStage" />
   <meta property="og:description" content="Answer 7 short questions to understand your caring stage and find local support in Solihull." />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="en_GB" />
-  <title>Male Carer Stage Checker</title>
-  <!-- Inline SVG favicon — no external file required -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230f766e'/%3E%3Cpath d='M16 9v7l4 4' stroke='white' stroke-width='2.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E" />
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%230f766e'/%3E%3Cpath d='M16 9v7l4 4' stroke='white' stroke-width='2.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E" />
+  <title>CareStage</title>
+  <!-- App icons and PWA manifest -->
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <link rel="apple-touch-icon" href="/icon.svg" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#2EC4B6" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="CareStage" />
   <style>
     /* ── Reset & Base ─────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -75,15 +81,16 @@
     .brand-mark {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #0f766e;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
       margin-bottom: 40px;
+      line-height: 1;
     }
-    .brand-mark svg { width: 20px; height: 20px; }
+    .brand-mark svg { width: auto; height: 28px; flex-shrink: 0; }
+    .brand-mark-care  { color: #1e3a5f; }
+    .brand-mark-stage { color: #2EC4B6; }
 
     .landing-title {
       font-size: clamp(26px, 6vw, 34px);
@@ -2555,12 +2562,23 @@
         <p><strong>Not for emergencies.</strong> If someone is in immediate danger, call <strong>999</strong>.</p>
       </div>
 
-      <div class="brand-mark">
-        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-          <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"/>
-          <path d="M10 6v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <div class="brand-mark" aria-label="CareStage">
+        <!-- CareStage logo mark — 4 rising bars + dot, blue-to-teal gradient -->
+        <svg viewBox="0 0 66 52" fill="none" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="csLogoGrad" x1="0" y1="52" x2="66" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0"    stop-color="#2E9AEF"/>
+              <stop offset="0.5"  stop-color="#2EC4B6"/>
+              <stop offset="1"    stop-color="#43D6A6"/>
+            </linearGradient>
+          </defs>
+          <rect x="0"  y="36" width="11" height="16" rx="2.5" fill="url(#csLogoGrad)"/>
+          <rect x="18" y="28" width="11" height="24" rx="2.5" fill="url(#csLogoGrad)"/>
+          <rect x="36" y="18" width="11" height="34" rx="2.5" fill="url(#csLogoGrad)"/>
+          <rect x="54" y="8"  width="11" height="44" rx="2.5" fill="url(#csLogoGrad)"/>
+          <circle cx="59.5" cy="4" r="4" fill="url(#csLogoGrad)"/>
         </svg>
-        Caring Support
+        <span><span class="brand-mark-care">Care</span><span class="brand-mark-stage">Stage</span></span>
       </div>
       <h1 class="landing-title">Find out where you are in your caring journey</h1>
       <p class="landing-intro">

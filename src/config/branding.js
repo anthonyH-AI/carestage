@@ -16,7 +16,7 @@ const BRANDING = {
   /* ── Identity ─────────────────────────────────────────────── */
   charityName:      "Carers Trust Solihull",
   organisationName: "Carers Trust Solihull",  // used in partner exports and PDF footer
-  serviceName:      "Male Carer Stage Checker",
+  serviceName:      "CareStage",
   logoPath:         null,   // set to e.g. "assets/logo.svg" if a logo is available
 
   /* ── Partner / local authority context ───────────────────── */

@@ -7,11 +7,13 @@
    to force old caches to be cleared on next visit.
 ════════════════════════════════════════════════════════════════ */
 
-const CACHE_VERSION = 'mcsc-v17';
+const CACHE_VERSION = 'mcsc-v18';
 
 const APP_SHELL = [
   './',
   './index.html',
+  './icon.svg',
+  './manifest.json',
   './resources.js',
   './action-plans.js',
   './contentReviewLog.js',

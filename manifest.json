@@ -1,0 +1,18 @@
+{
+  "name": "CareStage",
+  "short_name": "CareStage",
+  "description": "Find out where you are in your caring journey and what support is available.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#2EC4B6",
+  "background_color": "#f8fafc",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

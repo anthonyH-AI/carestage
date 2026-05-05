@@ -1,0 +1,24 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">CareStage home screen icon</title>
+  <desc id="desc">Rounded square blue to teal gradient app icon with four rising white rounded steps and a white dot above the tallest step.</desc>
+  <defs>
+    <linearGradient id="bgGradient" x1="132" y1="892" x2="892" y2="132" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2E9AEF"/>
+      <stop offset="0.52" stop-color="#2EC4B6"/>
+      <stop offset="1" stop-color="#43D6A6"/>
+    </linearGradient>
+    <filter id="softShadow" x="-12%" y="-10%" width="124%" height="128%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="28" stdDeviation="34" flood-color="#0F2D4D" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <rect x="112" y="112" width="800" height="800" rx="190" fill="url(#bgGradient)" filter="url(#softShadow)"/>
+
+  <g fill="#FFFFFF">
+    <rect x="270" y="574" width="118" height="156" rx="28"/>
+    <rect x="420" y="500" width="118" height="230" rx="28"/>
+    <rect x="570" y="412" width="118" height="318" rx="28"/>
+    <rect x="720" y="318" width="118" height="412" rx="28"/>
+    <circle cx="779" cy="244" r="42"/>
+  </g>
+</svg>
