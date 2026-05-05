@@ -2550,9 +2550,6 @@
         </div>
       </div>
 
-      <!-- Stage 15: time-based check-again prompt — populated by checkAndShowReminderBanner() -->
-      <div id="check-again-prompt" class="check-again-prompt" hidden role="note" aria-live="polite"></div>
-
       <!-- Safety-first notice (Stage 9) -->
       <div class="safety-notice" role="note" aria-label="Emergency safety information">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
@@ -2659,6 +2656,9 @@
           <!-- Populated by renderWhatsNew() -->
         </div>
       </details>
+
+      <!-- Stage 15: time-based check-again prompt — populated by checkAndShowReminderBanner() -->
+      <div id="check-again-prompt" class="check-again-prompt" hidden role="note" aria-live="polite"></div>
 
       <!-- Resilience fallback (Stage 15) — shown when content fails to load -->
       <div id="content-fallback-banner" class="content-fallback-banner" hidden role="alert" aria-live="assertive">
