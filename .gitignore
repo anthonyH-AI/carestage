@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Claude Code local config (not needed in repo)
+.claude/
+
+# Editor directories
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db

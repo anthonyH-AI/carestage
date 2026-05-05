@@ -1,0 +1,34 @@
+# Netlify deployment config for Male Carer Stage Checker
+# Deploy: connect repo to Netlify, set publish directory to "male-carer-stage-checker"
+
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Allow iframes from same origin (for embed mode)
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    X-Frame-Options = "ALLOWALL"
+
+[[redirects]]
+  from = "/start"
+  to = "/?entry=start"
+  status = 302
+
+[[redirects]]
+  from = "/urgent"
+  to = "/?entry=urgent"
+  status = 302
+
+[[redirects]]
+  from = "/stage/:num"
+  to = "/?stage=:num"
+  status = 302
