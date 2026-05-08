@@ -1409,6 +1409,87 @@ Cache version incremented to `mcsc-v17`.
 
 ---
 
+## V2 Stage 1 — Condition Awareness Layer
+
+A new `screen-condition` screen is shown before the 7 stage-checker questions. It asks "What best describes the situation?" and offers 8 options (editable in `src/content/conditions.js`). The selection is held in session-scoped state only (`_currentCondition`) — it does not affect stage scoring and is not stored on the device.
+
+- Back on Q1 returns to the condition screen rather than the landing screen
+- The selected condition is shown quietly on the result page under "What this means"
+- Condition is included in `buildResultText()` (copy/print) and `copySessionSummary()` (conversation mode)
+- `skipCondition()` sets `_currentCondition = null`; generic fallbacks are used throughout
+
+---
+
+## V2 Stage 2 — What May Happen Next
+
+### Overview
+
+A new "What may happen next" section is shown on the result page, after the "What to do next" steps and before the "Learn more" expandable. It shows 3–5 short bullet points describing situations other carers at this stage have sometimes noticed, to support preparation and reduce uncertainty.
+
+### Where content is stored
+
+All guidance lives in **`src/content/nextSteps.js`** as `NEXT_STAGE_GUIDANCE`, a plain object keyed by stage number (1–6). Each stage object contains:
+
+| Key | Content |
+|---|---|
+| `generic` | Shown when no condition is selected, or no condition-specific content exists |
+| `dementia` | Guidance for "Dementia or memory problems" |
+| `physical` | Guidance for "Physical health condition" |
+| `mental-health` | Guidance for "Mental health condition" |
+| `neurological` | Guidance for "Neurological condition" |
+| `learning-disability` | Guidance for "Learning disability or autism" |
+| `frailty` | Guidance for "Frailty or ageing" |
+
+### How condition matching works
+
+`getNextGuidance(stage, conditionId)` looks up `NEXT_STAGE_GUIDANCE[stage][conditionId]`. If that array exists and is non-empty it is returned; otherwise `NEXT_STAGE_GUIDANCE[stage].generic` is used. The `conditionId` comes from `_currentCondition.id` (set by V2 Stage 1).
+
+### Fallback behaviour
+
+| Scenario | What is shown |
+|---|---|
+| Condition selected, matching content exists | Condition-specific bullets |
+| Condition selected, no matching content | Generic stage bullets |
+| No condition selected (skipped) | Generic stage bullets |
+| `NEXT_STAGE_GUIDANCE` not loaded | Section is hidden |
+| Stage number has no entry | Section is hidden |
+
+### Safe language protections
+
+All content must use soft, preparatory language only. The `_validateNextGuidance()` function checks every item at render time against a list of patterns:
+
+```
+/\bwill\s+(?!not\b)/i    — "will" (but not "will not")
+/\bguaranteed\b/i
+/\binevitable\b/i
+/\bcertain\s+to\b/i
+/\bwill\s+definitely\b/i
+/\bthis\s+will\s+happen\b/i
+/\byou\s+are\s+likely\s+to\b/i
+```
+
+If a match is found, a `console.warn` message is logged to the browser console (never shown to users). This is a development safeguard — it does not prevent the content from rendering.
+
+**Required language:** may · might · can · sometimes · often · some carers · could
+
+**Forbidden language:** will · guaranteed · inevitable · certain · definitely
+
+### Included in print and copy
+
+- **Print view** — section renders in print because `#whats-next-result-section:not([hidden])` is set to `display: block !important` in `@media print`
+- **Copied result** (`buildResultText()`) — a `WHAT MAY HAPPEN NEXT` block with bullet points is included between "What to do next" and "Helpful tip"
+- **Session summary** (`copySessionSummary()`) — a `WHAT MAY HAPPEN NEXT` block is included before "Where to get help"
+
+### New JS functions
+
+| Function | Purpose |
+|---|---|
+| `getNextGuidance(stage, conditionId)` | Returns guidance array for a stage + optional condition |
+| `renderWhatsNext(stage, conditionId)` | Populates and shows (or hides) `#whats-next-result-section` |
+| `_validateNextGuidance(items, stage, conditionId)` | Logs console warnings if unsafe language is detected |
+
+---
+
 ## Suggested future work
 
 - **Multi-language support** — create `questions-cy.js`, `stageResults-cy.js` etc. for Welsh; add a language toggle that swaps the loaded content file

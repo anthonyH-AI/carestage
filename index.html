@@ -705,6 +705,26 @@
     .result-help-item-text { font-size: 15px; color: #334155; line-height: 1.5; }
     .result-help-item-text strong { color: #0f172a; font-weight: 600; }
 
+    /* ── What may happen next (V2 Stage 2) ─────────────────── */
+    .whats-next-hint {
+      font-size: 13px; color: #64748b; line-height: 1.55; margin-bottom: 14px;
+      font-style: italic;
+    }
+    .whats-next-list {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .whats-next-item {
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .whats-next-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #0d9488; flex-shrink: 0; margin-top: 8px;
+    }
+    .whats-next-text {
+      font-size: 15px; color: #334155; line-height: 1.6;
+    }
+
     /* Help link — teal, underlined, clear external indicator */
     a.help-link {
       color: #0f766e;
@@ -1934,11 +1954,18 @@
       .result-help-card,
       .learn-more-section,
       .history-banner,
-      .support-banner {
+      .support-banner,
+      #whats-next-result-section {
         border: 1px solid #ccc !important;
         background: #fff !important;
         break-inside: avoid;
       }
+
+      /* What may happen next — show in print */
+      #whats-next-result-section[hidden] { display: none !important; }
+      #whats-next-result-section:not([hidden]) { display: block !important; }
+      .whats-next-dot { background: #333 !important; }
+      .whats-next-hint { color: #555 !important; }
 
       .result-stage-label {
         border: 1px solid #333 !important;
@@ -2958,6 +2985,14 @@
         <ul class="followup-list" id="followup-list" aria-label="Follow-up conversation prompts"></ul>
       </div>
 
+      <!-- What may happen next (V2 Stage 2) -->
+      <div class="result-section" id="whats-next-result-section" hidden>
+        <p class="result-section-label">What may happen next</p>
+        <p class="whats-next-hint">Some situations other carers at this stage have noticed — not a prediction</p>
+        <ul class="whats-next-list" id="whats-next-list"
+            aria-label="What may happen next — experiences other carers at this stage have noticed"></ul>
+      </div>
+
       <!-- Learn more expandable -->
       <details class="learn-more-section" id="learn-more-section">
         <summary class="learn-more-toggle" aria-label="Learn more about this stage">
@@ -3341,6 +3376,7 @@
   <script src="src/content/helpLinks.js"></script>
   <script src="src/content/questions.js"></script>
   <script src="src/content/conditions.js"></script>
+  <script src="src/content/nextSteps.js"></script>
   <script src="src/content/stageResults.js"></script>
   <script src="src/content/resources.js"></script>
   <script src="src/content/actionPlans.js"></script>
@@ -3884,6 +3920,9 @@
         historyBanner.setAttribute('hidden', '');
       }
 
+      // What may happen next (V2 Stage 2)
+      renderWhatsNext(result.stage, _currentCondition ? _currentCondition.id : null);
+
       // Action plan (from action-plans.js)
       renderActionPlan(result.stage);
 
@@ -3958,6 +3997,12 @@
 
       const conditionLine = _currentCondition ? `Situation: ${_currentCondition.label}` : '';
 
+      // What may happen next text
+      const nextItems = getNextGuidance(r.stage, _currentCondition ? _currentCondition.id : null);
+      const whatsNextText = nextItems.length
+        ? nextItems.map(t => `• ${t}`).join('\n')
+        : '';
+
       return [
         `MALE CARER STAGE CHECKER — MY RESULT`,
         `Completed: ${dateStr}`,
@@ -3971,6 +4016,7 @@
         ``,
         `WHAT TO DO NEXT`,
         stepsText,
+        ...(whatsNextText ? [``, `WHAT MAY HAPPEN NEXT`, `(Some situations other carers at this stage have noticed — not a prediction)`, whatsNextText] : []),
         ``,
         `HELPFUL TIP`,
         r.tip,
@@ -4099,6 +4145,76 @@
       currentStep = 0;
       renderQuestion(0);
       showScreen('screen-question');
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       WHAT MAY HAPPEN NEXT — V2 Stage 2
+    ══════════════════════════════════════════════════════════ */
+
+    /* Safe-language guard — logs a console warning if any item
+       contains definitive/predictive language. Never throws. */
+    const _UNSAFE_LANG_PATTERNS = [
+      /\bwill\s+(?!not\b)/i,   // "will" (but not "will not")
+      /\bguaranteed\b/i,
+      /\binevitable\b/i,
+      /\bcertain\s+to\b/i,
+      /\bwill\s+definitely\b/i,
+      /\bthis\s+will\s+happen\b/i,
+      /\byou\s+are\s+likely\s+to\b/i,
+    ];
+
+    function _validateNextGuidance(items, stage, conditionId) {
+      items.forEach(function(text) {
+        _UNSAFE_LANG_PATTERNS.forEach(function(pattern) {
+          if (pattern.test(text)) {
+            console.warn(
+              '[CareStage] Safe-language check: possible definitive language in ' +
+              'nextSteps.js — stage=' + stage +
+              ' condition=' + (conditionId || 'generic') +
+              ':', text
+            );
+          }
+        });
+      });
+      return items;
+    }
+
+    /* Returns 3–5 guidance strings for a given stage + condition.
+       Falls back to generic if no condition-specific content exists. */
+    function getNextGuidance(stage, conditionId) {
+      if (typeof NEXT_STAGE_GUIDANCE === 'undefined') return [];
+      var stageData = NEXT_STAGE_GUIDANCE[stage];
+      if (!stageData) return [];
+      var items;
+      if (conditionId && stageData[conditionId] && stageData[conditionId].length) {
+        items = stageData[conditionId];
+      } else {
+        items = stageData.generic || [];
+      }
+      return _validateNextGuidance(items.slice(), stage, conditionId);
+    }
+
+    /* Renders (or hides) the #whats-next-result-section on the result page. */
+    function renderWhatsNext(stage, conditionId) {
+      var section = document.getElementById('whats-next-result-section');
+      var list    = document.getElementById('whats-next-list');
+      if (!section || !list) return;
+
+      var items = getNextGuidance(stage, conditionId);
+
+      if (!items.length) {
+        section.setAttribute('hidden', '');
+        return;
+      }
+
+      list.innerHTML = items.map(function(text) {
+        return '<li class="whats-next-item">' +
+          '<span class="whats-next-dot" aria-hidden="true"></span>' +
+          '<span class="whats-next-text">' + text + '</span>' +
+          '</li>';
+      }).join('');
+
+      section.removeAttribute('hidden');
     }
 
     function goNext() {
@@ -5571,6 +5687,14 @@
             });
           text += '\n';
         }
+      }
+
+      // What may happen next (V2 Stage 2)
+      const nextItems = getNextGuidance(r.stage, _currentCondition ? _currentCondition.id : null);
+      if (nextItems.length) {
+        text += `WHAT MAY HAPPEN NEXT\n`;
+        nextItems.forEach(item => { text += `• ${item}\n`; });
+        text += '\n';
       }
 
       // Help links
