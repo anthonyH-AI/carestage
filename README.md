@@ -1490,6 +1490,75 @@ If a match is found, a `console.warn` message is logged to the browser console (
 
 ---
 
+## V2 Stage 3 — What You May Need to Do
+
+### Overview
+
+A new "What you may need to do" section is shown on the result page, directly after "What may happen next" and before the "Learn more" expandable. It shows 3–5 short bullet points describing practical responsibilities some carers at this stage begin to take on. The tone is supportive and preparatory — never demanding or guilt-inducing.
+
+### Where content is stored
+
+All guidance lives in **`src/content/responsibilities.js`** as `RESPONSIBILITY_GUIDANCE`, a plain object keyed by stage number (1–6). Each stage object contains:
+
+| Key | Content |
+|---|---|
+| `generic` | Shown when no condition is selected, or no condition-specific content exists |
+| `dementia` | Guidance for "Dementia or memory problems" |
+| `physical` | Guidance for "Physical health condition" |
+| `mental-health` | Guidance for "Mental health condition" |
+| `neurological` | Guidance for "Neurological condition" |
+| `learning-disability` | Guidance for "Learning disability or autism" |
+| `frailty` | Guidance for "Frailty or ageing" |
+
+### How condition matching works
+
+`getResponsibilityGuidance(stage, conditionId)` looks up `RESPONSIBILITY_GUIDANCE[stage][conditionId]`. If that array exists and is non-empty, it is returned; otherwise `RESPONSIBILITY_GUIDANCE[stage].generic` is used. The `conditionId` comes from `_currentCondition.id` (set by V2 Stage 1).
+
+### Fallback behaviour
+
+| Scenario | What is shown |
+|---|---|
+| Condition selected, matching content exists | Condition-specific bullets |
+| Condition selected, no matching content | Generic stage bullets |
+| No condition selected (skipped) | Generic stage bullets |
+| `RESPONSIBILITY_GUIDANCE` not loaded | Section is hidden |
+| Stage number has no entry | Section is hidden |
+
+### Safe language protections
+
+All content must use supportive, non-demanding language. The `_validateResponsibilityGuidance()` function checks every item at render time against a list of patterns:
+
+```
+/\bmust\b/i
+/\brequired\s+to\b/i
+/\byou\s+should\s+always\b/i
+/\balways\s+responsible\s+for\b/i
+/\byou\s+are\s+expected\s+to\b/i
+/\byou\s+need\s+to\b/i  (excluding "you may need to think/consider/know")
+```
+
+If a match is found, a `console.warn` message is logged. Never shown to users. Never blocks rendering.
+
+**Required language:** may · might · can · often helps · some carers begin to · you may find yourself · it can help to
+
+**Forbidden language:** must · required to · should always · always responsible for · you are expected to
+
+### Included in print and copy
+
+- **Print view** — section renders via `#responsibilities-result-section:not([hidden]) { display: block !important; }` in `@media print`
+- **Copied result** (`buildResultText()`) — a `WHAT YOU MAY NEED TO DO` block with bullets is included between "What may happen next" and "Helpful tip"
+- **Session summary** (`copySessionSummary()`) — a `WHAT YOU MAY NEED TO DO` block is included between "What may happen next" and "Where to get help"
+
+### New JS functions
+
+| Function | Purpose |
+|---|---|
+| `getResponsibilityGuidance(stage, conditionId)` | Returns guidance array for a stage + optional condition |
+| `renderResponsibilities(stage, conditionId)` | Populates and shows (or hides) `#responsibilities-result-section` |
+| `_validateResponsibilityGuidance(items, stage, conditionId)` | Logs console warnings if demanding language is detected |
+
+---
+
 ## Suggested future work
 
 - **Multi-language support** — create `questions-cy.js`, `stageResults-cy.js` etc. for Welsh; add a language toggle that swaps the loaded content file

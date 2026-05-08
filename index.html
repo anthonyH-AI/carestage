@@ -725,6 +725,26 @@
       font-size: 15px; color: #334155; line-height: 1.6;
     }
 
+    /* ── What you may need to do (V2 Stage 3) ──────────────── */
+    .responsibilities-hint {
+      font-size: 13px; color: #64748b; line-height: 1.55; margin-bottom: 14px;
+      font-style: italic;
+    }
+    .responsibilities-list {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .responsibilities-item {
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .responsibilities-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #7c3aed; flex-shrink: 0; margin-top: 8px;
+    }
+    .responsibilities-text {
+      font-size: 15px; color: #334155; line-height: 1.6;
+    }
+
     /* Help link — teal, underlined, clear external indicator */
     a.help-link {
       color: #0f766e;
@@ -1967,6 +1987,12 @@
       .whats-next-dot { background: #333 !important; }
       .whats-next-hint { color: #555 !important; }
 
+      /* What you may need to do — show in print */
+      #responsibilities-result-section[hidden] { display: none !important; }
+      #responsibilities-result-section:not([hidden]) { display: block !important; }
+      .responsibilities-dot { background: #333 !important; }
+      .responsibilities-hint { color: #555 !important; }
+
       .result-stage-label {
         border: 1px solid #333 !important;
         background: none !important;
@@ -2993,6 +3019,14 @@
             aria-label="What may happen next — experiences other carers at this stage have noticed"></ul>
       </div>
 
+      <!-- What you may need to do (V2 Stage 3) -->
+      <div class="result-section" id="responsibilities-result-section" hidden>
+        <p class="result-section-label">What you may need to do</p>
+        <p class="responsibilities-hint">Practical responsibilities some carers at this stage begin to take on — at your own pace</p>
+        <ul class="responsibilities-list" id="responsibilities-list"
+            aria-label="Practical responsibilities some carers at this stage begin to take on"></ul>
+      </div>
+
       <!-- Learn more expandable -->
       <details class="learn-more-section" id="learn-more-section">
         <summary class="learn-more-toggle" aria-label="Learn more about this stage">
@@ -3377,6 +3411,7 @@
   <script src="src/content/questions.js"></script>
   <script src="src/content/conditions.js"></script>
   <script src="src/content/nextSteps.js"></script>
+  <script src="src/content/responsibilities.js"></script>
   <script src="src/content/stageResults.js"></script>
   <script src="src/content/resources.js"></script>
   <script src="src/content/actionPlans.js"></script>
@@ -3923,6 +3958,9 @@
       // What may happen next (V2 Stage 2)
       renderWhatsNext(result.stage, _currentCondition ? _currentCondition.id : null);
 
+      // What you may need to do (V2 Stage 3)
+      renderResponsibilities(result.stage, _currentCondition ? _currentCondition.id : null);
+
       // Action plan (from action-plans.js)
       renderActionPlan(result.stage);
 
@@ -4003,6 +4041,12 @@
         ? nextItems.map(t => `• ${t}`).join('\n')
         : '';
 
+      // What you may need to do text
+      const respItems = getResponsibilityGuidance(r.stage, _currentCondition ? _currentCondition.id : null);
+      const responsibilitiesText = respItems.length
+        ? respItems.map(t => `• ${t}`).join('\n')
+        : '';
+
       return [
         `MALE CARER STAGE CHECKER — MY RESULT`,
         `Completed: ${dateStr}`,
@@ -4017,6 +4061,7 @@
         `WHAT TO DO NEXT`,
         stepsText,
         ...(whatsNextText ? [``, `WHAT MAY HAPPEN NEXT`, `(Some situations other carers at this stage have noticed — not a prediction)`, whatsNextText] : []),
+        ...(responsibilitiesText ? [``, `WHAT YOU MAY NEED TO DO`, `(Practical responsibilities some carers at this stage begin to take on — at your own pace)`, responsibilitiesText] : []),
         ``,
         `HELPFUL TIP`,
         r.tip,
@@ -4211,6 +4256,76 @@
         return '<li class="whats-next-item">' +
           '<span class="whats-next-dot" aria-hidden="true"></span>' +
           '<span class="whats-next-text">' + text + '</span>' +
+          '</li>';
+      }).join('');
+
+      section.removeAttribute('hidden');
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       WHAT YOU MAY NEED TO DO — V2 Stage 3
+    ══════════════════════════════════════════════════════════ */
+
+    /* Safe-language guard — logs a console warning if any item
+       contains demanding, guilt-inducing, or clinical language.
+       Never throws; never shown to users. */
+    const _RESPONSIBILITY_UNSAFE_PATTERNS = [
+      /\bmust\b/i,
+      /\brequired\s+to\b/i,
+      /\byou\s+should\s+always\b/i,
+      /\balways\s+responsible\s+for\b/i,
+      /\byou\s+are\s+expected\s+to\b/i,
+      /\byou\s+need\s+to\b(?!\s+(?:think|consider|know))/i, // allow "you may need to think/consider/know"
+    ];
+
+    function _validateResponsibilityGuidance(items, stage, conditionId) {
+      items.forEach(function(text) {
+        _RESPONSIBILITY_UNSAFE_PATTERNS.forEach(function(pattern) {
+          if (pattern.test(text)) {
+            console.warn(
+              '[CareStage] Safe-language check: possible demanding language in ' +
+              'responsibilities.js — stage=' + stage +
+              ' condition=' + (conditionId || 'generic') +
+              ':', text
+            );
+          }
+        });
+      });
+      return items;
+    }
+
+    /* Returns 3–5 responsibility strings for a given stage + condition.
+       Falls back to generic if no condition-specific content exists. */
+    function getResponsibilityGuidance(stage, conditionId) {
+      if (typeof RESPONSIBILITY_GUIDANCE === 'undefined') return [];
+      var stageData = RESPONSIBILITY_GUIDANCE[stage];
+      if (!stageData) return [];
+      var items;
+      if (conditionId && stageData[conditionId] && stageData[conditionId].length) {
+        items = stageData[conditionId];
+      } else {
+        items = stageData.generic || [];
+      }
+      return _validateResponsibilityGuidance(items.slice(), stage, conditionId);
+    }
+
+    /* Renders (or hides) the #responsibilities-result-section on the result page. */
+    function renderResponsibilities(stage, conditionId) {
+      var section = document.getElementById('responsibilities-result-section');
+      var list    = document.getElementById('responsibilities-list');
+      if (!section || !list) return;
+
+      var items = getResponsibilityGuidance(stage, conditionId);
+
+      if (!items.length) {
+        section.setAttribute('hidden', '');
+        return;
+      }
+
+      list.innerHTML = items.map(function(text) {
+        return '<li class="responsibilities-item">' +
+          '<span class="responsibilities-dot" aria-hidden="true"></span>' +
+          '<span class="responsibilities-text">' + text + '</span>' +
           '</li>';
       }).join('');
 
@@ -5694,6 +5809,14 @@
       if (nextItems.length) {
         text += `WHAT MAY HAPPEN NEXT\n`;
         nextItems.forEach(item => { text += `• ${item}\n`; });
+        text += '\n';
+      }
+
+      // What you may need to do (V2 Stage 3)
+      const respItems = getResponsibilityGuidance(r.stage, _currentCondition ? _currentCondition.id : null);
+      if (respItems.length) {
+        text += `WHAT YOU MAY NEED TO DO\n`;
+        respItems.forEach(item => { text += `• ${item}\n`; });
         text += '\n';
       }
 
