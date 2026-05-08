@@ -7,7 +7,7 @@
    to force old caches to be cleared on next visit.
 ════════════════════════════════════════════════════════════════ */
 
-const CACHE_VERSION = 'mcsc-v18';
+const CACHE_VERSION = 'mcsc-v19';
 
 const APP_SHELL = [
   './',
@@ -19,6 +19,7 @@ const APP_SHELL = [
   './contentReviewLog.js',
   './src/config/admin.js',
   './src/config/branding.js?v=13',
+  './src/content/conditions.js',
   './src/content/helpLinks.js',
   './src/content/questions.js',
   './src/content/stageResults.js',
