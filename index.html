@@ -1083,6 +1083,32 @@
     /* Follow-up prompts */
     .followup-section { margin: 24px 0; }
     .followup-section[hidden] { display: none; }
+    .followup-section-intro {
+      font-size: 14px; color: #475569; line-height: 1.6; margin-bottom: 12px;
+    }
+    /* ── Session focus selector (V2 Stage 10) ──────────── */
+    .session-focus-row {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+    }
+    .session-focus-chip {
+      font-size: 13px; font-weight: 600; padding: 6px 14px;
+      border-radius: 20px; border: 1.5px solid #cbd5e1;
+      background: #fff; color: #475569; cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+      font-family: inherit;
+    }
+    .session-focus-chip:hover { border-color: #0f766e; color: #0f766e; background: #f0fdfa; }
+    .session-focus-chip[aria-pressed="true"] {
+      border-color: #0f766e; background: #0f766e; color: #fff;
+    }
+    .session-focus-empty {
+      font-size: 14px; color: #94a3b8; font-style: italic; padding: 8px 0;
+    }
+    .session-encouragement {
+      font-size: 13px; color: #475569; background: #f8fafc;
+      border-left: 3px solid #94a3b8; padding: 8px 12px; border-radius: 0 6px 6px 0;
+      margin-top: 12px; line-height: 1.55;
+    }
     .followup-list {
       list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 6px;
     }
@@ -3367,10 +3393,19 @@
         <button class="agreed-step-clear" id="agreed-step-clear" onclick="clearAgreedStep()" hidden aria-label="Clear agreed next step">Clear selection</button>
       </div>
 
-      <!-- Follow-up prompts (Stage 11 — professional mode only) -->
+      <!-- Discussion guide (Stage 11 / V2 Stage 10 — professional mode only) -->
       <div class="followup-section" id="followup-section" hidden>
-        <p class="result-section-label">Follow-up prompts</p>
-        <ul class="followup-list" id="followup-list" aria-label="Follow-up conversation prompts"></ul>
+        <p class="result-section-label" id="followup-section-label">Discussion guide</p>
+        <p class="followup-section-intro">Select a focus below to get stage-specific prompts, or use the general prompts without selecting a focus.</p>
+        <!-- Session focus selector (V2 Stage 10) -->
+        <div class="session-focus-row" role="group" aria-label="Select a conversation focus">
+          <button class="session-focus-chip" data-focus="opening"    aria-pressed="false" onclick="setSessionFocus('opening')">Opening</button>
+          <button class="session-focus-chip" data-focus="practical"  aria-pressed="false" onclick="setSessionFocus('practical')">Practical</button>
+          <button class="session-focus-chip" data-focus="support"    aria-pressed="false" onclick="setSessionFocus('support')">Support</button>
+          <button class="session-focus-chip" data-focus="reflection" aria-pressed="false" onclick="setSessionFocus('reflection')">Reflection</button>
+        </div>
+        <ul class="followup-list" id="followup-list" aria-label="Conversation prompts for this session"></ul>
+        <div class="session-encouragement" id="session-encouragement" hidden></div>
       </div>
 
       <!-- What may happen next (V2 Stage 2) -->
@@ -3798,6 +3833,7 @@
   <script src="src/content/emotionalValidation.js"></script>
   <script src="src/content/progressionGuidance.js"></script>
   <script src="src/content/serviceSuggestions.js"></script>
+  <script src="src/content/conversationPrompts.js"></script>
   <script src="src/content/stageResults.js"></script>
   <script src="src/content/resources.js"></script>
   <script src="src/content/actionPlans.js"></script>
@@ -3833,6 +3869,7 @@
     let _currentCondition = null;        // V2 Stage 1: { id, label } or null if skipped
     let _resultOverride = null;          // set before renderResult() to bypass scoring (used by jumpToStage)
     let _professionalMode = false;       // Stage 11: professional/staff mode toggle (session-only, not persisted)
+    let _sessionFocus    = null;         // V2 Stage 10: selected conversation focus category or null
 
     /* ═══════════════════════════════════════════════════
        ANALYTICS
@@ -6028,11 +6065,72 @@
       ]
     };
 
+    /* ── Session encouragement phrases (one per stage) ─── */
+    const SESSION_ENCOURAGEMENT = {
+      1: "You have taken an important first step by talking about your caring role today.",
+      2: "You are building a clearer picture of what you need — that takes real effort.",
+      3: "Every conversation about caring matters. You are doing more than many people do.",
+      4: "Reaching out when things are hard takes real strength. Please do not carry this alone.",
+      5: "You do not have to manage this by yourself. Support is available — please use it.",
+      6: "The caring role is part of your story, but it is not all of it. You matter too.",
+    };
+
+    /* ── Focus category display labels ───────────────── */
+    const FOCUS_LABELS = {
+      opening:    'Opening',
+      practical:  'Practical',
+      support:    'Support',
+      reflection: 'Reflection',
+    };
+
+    /* ── Set session focus (V2 Stage 10) ─────────────── */
+    function setSessionFocus(category) {
+      // Toggle: clicking active focus deselects it
+      _sessionFocus = (_sessionFocus === category) ? null : category;
+
+      // Update chip aria-pressed states
+      document.querySelectorAll('.session-focus-chip').forEach(btn => {
+        btn.setAttribute('aria-pressed', String(btn.dataset.focus === _sessionFocus));
+      });
+
+      // Update section label
+      const label = document.getElementById('followup-section-label');
+      if (label) {
+        label.textContent = _sessionFocus
+          ? FOCUS_LABELS[_sessionFocus] + ' prompts'
+          : 'Discussion guide';
+      }
+
+      // Re-render prompts for current stage
+      if (_currentResult) renderFollowUpPrompts(_currentResult.stage);
+      logEvent('session_focus_selected', { focus: _sessionFocus || 'none', stage: _currentResult?.stage });
+    }
+
+    /* ── Render conversation prompts for the session ──── */
     function renderFollowUpPrompts(stageNum) {
       const list = document.getElementById('followup-list');
       if (!list) return;
-      const prompts = FOLLOWUP_PROMPTS[stageNum] || [];
-      list.innerHTML = prompts.map(p => `<li>${p}</li>`).join('');
+
+      let prompts;
+      if (_sessionFocus && typeof CONVERSATION_PROMPTS !== 'undefined') {
+        const stageKey  = 'stage' + stageNum;
+        const stageData = CONVERSATION_PROMPTS[stageKey];
+        prompts = (stageData && stageData[_sessionFocus]) ? stageData[_sessionFocus] : [];
+      } else {
+        prompts = FOLLOWUP_PROMPTS[stageNum] || [];
+      }
+
+      list.innerHTML = prompts.length
+        ? prompts.map(p => `<li>${p}</li>`).join('')
+        : '<li class="session-focus-empty">No prompts available for this combination.</li>';
+
+      // Encouragement phrase
+      const enc = document.getElementById('session-encouragement');
+      if (enc) {
+        const phrase = SESSION_ENCOURAGEMENT[stageNum];
+        if (phrase) { enc.textContent = phrase; enc.hidden = false; }
+        else         { enc.hidden = true; }
+      }
     }
 
     /* ── Render all professional elements ────────────── */
@@ -6054,9 +6152,18 @@
         renderAgreedStep();
       }
 
-      // Follow-up prompts section
+      // Follow-up / Discussion guide section (V2 Stage 10)
       const followupSection = document.getElementById('followup-section');
       if (followupSection) followupSection.hidden = !isPro;
+      if (!isPro) {
+        // Reset focus state when professional mode is turned off
+        _sessionFocus = null;
+        document.querySelectorAll('.session-focus-chip').forEach(btn => {
+          btn.setAttribute('aria-pressed', 'false');
+        });
+        const lbl = document.getElementById('followup-section-label');
+        if (lbl) lbl.textContent = 'Discussion guide';
+      }
       if (isPro && result) {
         renderFollowUpPrompts(result.stage);
       }
@@ -6083,6 +6190,16 @@
       if (titleEl) titleEl.textContent = `Stage ${r.stage}: ${r.title}`;
       const meaningEl = document.getElementById('ss-stage-meaning');
       if (meaningEl) meaningEl.textContent = r.meaning || '';
+
+      // Session focus (V2 Stage 10)
+      const ssFocusSection = document.getElementById('ss-focus-section');
+      const ssFocusLabel   = document.getElementById('ss-focus-label');
+      if (_sessionFocus && ssFocusSection && ssFocusLabel) {
+        ssFocusLabel.textContent = FOCUS_LABELS[_sessionFocus] || _sessionFocus;
+        ssFocusSection.hidden = false;
+      } else if (ssFocusSection) {
+        ssFocusSection.hidden = true;
+      }
 
       // Agreed next step
       const agreedEl = document.getElementById('ss-agreed-text');
@@ -6122,11 +6239,37 @@
         const saved = loadAgreedStep();
         csAgreed.textContent = saved && saved.stepText ? saved.stepText : 'Not selected';
       }
+
+      // Focus + prompts in print sheet (V2 Stage 10)
+      const csFocusSection = document.getElementById('cs-focus-section-print');
+      const csFocusPrint   = document.getElementById('cs-focus-print');
+      const csPromptsLabel = document.getElementById('cs-prompts-label-print');
+      if (_sessionFocus && csFocusSection && csFocusPrint) {
+        csFocusPrint.textContent  = FOCUS_LABELS[_sessionFocus] || _sessionFocus;
+        csFocusSection.style.display = '';
+        if (csPromptsLabel) csPromptsLabel.textContent = FOCUS_LABELS[_sessionFocus] + ' prompts';
+      } else if (csFocusSection) {
+        csFocusSection.style.display = 'none';
+        if (csPromptsLabel) csPromptsLabel.textContent = 'Discussion prompts';
+      }
       const csPrompts = document.getElementById('cs-prompts-print');
       if (csPrompts) {
-        const prompts = FOLLOWUP_PROMPTS[r.stage] || [];
-        csPrompts.innerHTML = prompts.map(p => `<li>${p}</li>`).join('');
+        let printPrompts;
+        if (_sessionFocus && typeof CONVERSATION_PROMPTS !== 'undefined') {
+          const sk = CONVERSATION_PROMPTS['stage' + r.stage];
+          printPrompts = (sk && sk[_sessionFocus]) ? sk[_sessionFocus] : FOLLOWUP_PROMPTS[r.stage] || [];
+        } else {
+          printPrompts = FOLLOWUP_PROMPTS[r.stage] || [];
+        }
+        csPrompts.innerHTML = printPrompts.map(p => `<li>${p}</li>`).join('');
       }
+
+      // Encouragement closing note
+      const csEnc = document.getElementById('cs-encouragement-print');
+      if (csEnc) {
+        csEnc.textContent = SESSION_ENCOURAGEMENT[r.stage] || '';
+      }
+
       const csOrg = document.getElementById('cs-org-print');
       if (csOrg && typeof BRANDING !== 'undefined') {
         csOrg.textContent = BRANDING.charityName || '';
@@ -7640,6 +7783,12 @@
         <p class="session-summary-stage-meaning" id="ss-stage-meaning"></p>
       </div>
 
+      <!-- Session focus (V2 Stage 10 — shown when a focus was selected) -->
+      <div class="session-summary-section" id="ss-focus-section" hidden>
+        <p class="session-summary-section-label">Session focus</p>
+        <p id="ss-focus-label" style="font-size:14px;color:#334155;font-weight:600;text-transform:capitalize;"></p>
+      </div>
+
       <!-- Agreed next step -->
       <div class="session-summary-section" id="ss-agreed-section">
         <p class="session-summary-section-label">Agreed next step</p>
@@ -7685,9 +7834,17 @@
           <div class="cs-section-label">Agreed next step</div>
           <p id="cs-agreed-print"></p>
         </div>
+        <div class="cs-section" id="cs-focus-section-print" style="display:none">
+          <div class="cs-section-label">Session focus</div>
+          <p id="cs-focus-print" style="font-size:11pt;font-weight:600;text-transform:capitalize;margin:0;"></p>
+        </div>
         <div class="cs-section">
-          <div class="cs-section-label">Follow-up prompts</div>
+          <div class="cs-section-label" id="cs-prompts-label-print">Discussion prompts</div>
           <ul class="cs-prompts" id="cs-prompts-print"></ul>
+        </div>
+        <div class="cs-section">
+          <div class="cs-section-label">Closing note</div>
+          <p id="cs-encouragement-print" style="font-size:10pt;color:#444;font-style:italic;margin:0;"></p>
         </div>
         <div class="cs-section">
           <div class="cs-section-label">Notes</div>
