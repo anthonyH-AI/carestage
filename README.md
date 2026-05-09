@@ -439,6 +439,71 @@ Script loading order in `index.html` (dependencies must load first):
 
 ---
 
+## How to use the Explainer Dashboard
+
+### What it is
+
+The Explainer Dashboard is a static internal reference page at `explainer/index.html`. It documents how CareStage works — the scoring logic, content layers, configuration options, and data model — in a format that does not require reading code. It is intended for people who need to understand, present, test, or hand off the tool, but who are not necessarily editing it day to day.
+
+### Who it is for
+
+| Audience | What they use it for |
+|---|---|
+| Carers Trust staff and coordinators | Understanding what the tool does before recommending it to carers; preparing for client sessions |
+| Developers and technical leads | Onboarding quickly; reviewing the architecture before making changes |
+| Partner organisations | Understanding the tool before embedding or rebranding it |
+| Content reviewers | Checking what each stage means, how scores map to stages, and which content files to edit |
+
+### How to open it
+
+Open `explainer/index.html` in any modern browser. If the dev server is running (`python3 -m http.server 3456 --directory male-carer-stage-checker`), visit:
+
+```
+http://localhost:3456/explainer/
+```
+
+It has no dependencies, no build step, and works fully offline. It does not load or call the main tool's service worker.
+
+### What each section covers
+
+| Section | What it explains |
+|---|---|
+| **Overview** | What the tool does and what it deliberately does not do |
+| **User journey** | The full flow from landing → condition screen → questions → result (including the urgent fork) |
+| **6 Stages** | What each stage title and score band means; review timing |
+| **Scoring** | Every question with answer options, point values, pressure annotations, and trigger badges |
+| **V2 Layers** | All 10 V2 enhancements — click each accordion row to see the content file, lookup pattern, and language rules |
+| **Pro Mode** | What professional/volunteer mode adds and how the `body.professional-mode` CSS class controls it |
+| **Config** | Every `branding.js` field with its current value; URL entry points (`?stage=N`, `?mode=insights`, `?embed=true`) |
+| **Analytics** | Every named `logEvent()` event and when it fires |
+| **Privacy** | localStorage keys, what is never stored, and how to connect an external analytics provider |
+| **Files** | Complete file table with globals and edit instructions; directory tree |
+
+### How to use the simulator presets
+
+The **Live scoring simulator** in the Scoring section lets you change any answer and see the stage, score, pressure level, and triggered flags update in real time.
+
+The preset buttons above the selects load a representative set of answers in one click:
+
+| Button | What it loads | Score |
+|---|---|---|
+| Stage 1 | All low answers | 4 pts |
+| Stage 3 | Mid-range answers | 11 pts |
+| Stage 5 | High-pressure answers, no burnout | 21 pts |
+| Stage 6 | High-pressure answers with burnout | 26 pts |
+| 🔶 Urgent trigger | Q5 = "I need urgent help" | 10 pts + urgent flag |
+
+Use presets to demonstrate a specific stage to a colleague, verify that a score lands where expected after editing `SCORE_BANDS`, or check how the pressure level changes across the range.
+
+### What the dashboard is not for
+
+- **Not for carers.** It uses technical language throughout and is not suitable for sharing with the people the tool serves.
+- **Not for assessment or case recording.** Any result shown in the simulator is illustrative only. It must not be used to make decisions about a carer's support needs, record a carer's situation, or stand in place of a proper carer's assessment.
+- **Not the source of truth for content.** The dashboard documents the current state of the files in `src/content/`. If content is edited, the dashboard does not update automatically — it reflects whatever the files say at the time it was last generated.
+- **Not a live analytics view.** Usage data in the real tool is stored locally on each user's device. The dashboard contains no live counters or aggregated statistics.
+
+---
+
 ## Stage 8 features
 
 ### Use with someone mode
@@ -1695,6 +1760,279 @@ Cache version bumped to `mcsc-v22`.
 
 ---
 
+## V2 Stage 5 — Pressure check
+
+A **"How you have been managing"** section on the result page evaluates cumulative pressure signals from the user's answers. It is derived from answers to Q3–Q7 and whether the urgent support screen was shown.
+
+### `getPressureLevel(answersObj, urgentWasShown)`
+
+Returns one of `'low'`, `'moderate'`, or `'high'`:
+
+| Condition | Level |
+|---|---|
+| Urgent screen was shown | Always `'high'` |
+| Accumulates ≥ 4 pressure points from Q3–Q7 | `'high'` |
+| Accumulates 2–3 pressure points | `'moderate'` |
+| Accumulates 0–1 pressure points | `'low'` |
+
+Pressure points are assigned for specific answers that indicate strain (e.g. "I feel overwhelmed", "I am getting no help", "I am worried about my health").
+
+### Where content is stored
+
+All pressure guidance lives in **`src/content/pressureGuidance.js`** as `PRESSURE_GUIDANCE`, keyed by `'low'`, `'moderate'`, and `'high'`. Each entry has a `title`, `intro`, and `points` array.
+
+**Safe language rule:** content describes what carers at this level often experience — never diagnoses, never prescriptive.
+
+### Rendered output
+
+`renderPressureCheck()` reads the current answers and `_urgentWasShown` state, calls `getPressureLevel()`, and populates the `#pressure-check-section` element. The section is hidden if `PRESSURE_GUIDANCE` is not loaded.
+
+The pressure level is also included in `buildResultText()` (copy output) and `copySessionSummary()`.
+
+---
+
+## V2 Stage 6 — Emotional validation
+
+A **"How you may be feeling"** section on the result page provides a warm, stage-aware, condition-aware acknowledgement. It appears directly after the condition display and before the main action button.
+
+### Where content is stored
+
+All validation content lives in **`src/content/emotionalValidation.js`** as `EMOTIONAL_VALIDATION`, keyed by stage number (1–6). Each stage entry has three pressure-level variants (`low`, `moderate`, `high`) and an optional condition-specific override map.
+
+Lookup pattern:
+```js
+EMOTIONAL_VALIDATION[stage][conditionId]?.[pressureLevel]
+  ?? EMOTIONAL_VALIDATION[stage].generic?.[pressureLevel]
+```
+
+If neither exists, the section is hidden.
+
+### Rendered output
+
+`renderEmotionalValidation(stage, conditionId, pressureLevel)` populates `#emotional-validation-section`. The pressure level is always computed before this call so the correct variant is shown. Included in `buildResultText()` and `copySessionSummary()`.
+
+**Safe language rule:** content uses warm, normalising language. It never tells carers how they feel — only acknowledges what is common at this stage and pressure level.
+
+---
+
+## V2 Stage 7 — Progression reassurance
+
+A **"Caring rarely follows a straight line"** section appears on every result page, positioned after the pressure check and before the "Learn more" expandable. It reassures carers that moving between stages is normal and that the result is a snapshot, not a fixed label.
+
+### Where content is stored
+
+Content lives in **`src/content/progressionGuidance.js`** as `PROGRESSION_GUIDANCE`, with two variants:
+
+| Key | Used when |
+|---|---|
+| `generic` | Stages 1–5 |
+| `stage6` | Stage 6 only — extra reassurance that crisis is not permanent |
+
+Each variant has: `title`, `intro`, `points` (array of 4–5 bullets), `reassurance` (single closing sentence).
+
+### Rendered output
+
+`renderProgressionGuidance(stage)` populates `#progression-section`. Included in `buildResultText()` as a `CARING RARELY FOLLOWS A STRAIGHT LINE` block, and in `copySessionSummary()` as `A NOTE ON YOUR STAGE`.
+
+**Safe language rule:** no prediction of future stages; no implication the carer has failed or fallen back.
+
+---
+
+## V2 Stage 8 — Condition-specific service suggestions
+
+A **"Support that may fit your situation"** section appears on the result page when a condition was selected in V2 Stage 1. It shows 2–3 national service suggestions specific to the selected condition. The section is hidden entirely when no condition is set.
+
+### Where content is stored
+
+All content lives in **`src/content/serviceSuggestions.js`** as `SERVICE_SUGGESTIONS`, keyed by condition id. All 8 condition IDs are covered: `dementia`, `physical`, `mental-health`, `neurological`, `learning-disability`, `frailty`, `not-sure`, `other`.
+
+Each entry:
+```js
+{
+  title: "Support for dementia and memory conditions",
+  intro: "A few organisations that specialise in...",
+  suggestions: [
+    {
+      name: "Alzheimer's Society",
+      type: "National charity",
+      why: "Offers specialist information, local support groups...",
+      url: "https://www.alzheimers.org.uk",
+      phone: "0333 150 3456",
+      phoneLabel: "Dementia Connect helpline",
+    },
+    // ...
+  ],
+}
+```
+
+Services listed include Alzheimer's Society, Dementia UK Admiral Nurses, Rethink Mental Illness, Mind, Headway, MS Society, Parkinson's UK, Mencap, National Autistic Society, Age UK, Independent Age, Carers UK, and NHS guidance pages.
+
+### Rendered output
+
+`renderServiceSuggestions(conditionId)` populates `#service-suggestions-section`. If `conditionId` is null or no matching entry exists, the section is hidden. Included in `buildResultText()` and `copySessionSummary()`.
+
+**Not a replacement for the main directory.** A footer link always points to "View all support" for the full directory.
+
+**Safe language rule:** suggestions use `may`, `might`, `can`, `could`. The section never implies these are the only relevant services or that the carer has failed to find them already.
+
+---
+
+## V2 Stage 9 — Printable Carer Roadmap
+
+The **"Print Carer Roadmap"** button (previously "Download my summary") now generates a dedicated, fully structured A4 document rather than printing the result screen as-is.
+
+### How it works
+
+`downloadSummary()` calls `renderPrintableRoadmap()`, which:
+
+1. Builds a complete HTML document from all current result state (stage, condition, emotional validation, pressure, what's next, responsibilities, service suggestions, next steps, help links, Bridgit card, review note)
+2. Injects it into `#print-roadmap-section`
+3. Adds `body.printing-roadmap` CSS class — this hides all `.screen` elements and shows only the roadmap section
+4. Calls `window.print()` after an 80 ms delay (allows repaint)
+
+After print (or cancel), `window.addEventListener('afterprint', ...)` removes the class and clears the roadmap content.
+
+### CSS classes
+
+```css
+body.printing-roadmap .screen { display: none !important; }
+body.printing-roadmap #print-roadmap-section { display: block !important; }
+```
+
+### Roadmap structure
+
+The printed document includes: header with charity name and date, stage label and title, emotional validation, progression reassurance, pressure summary, what may happen next, what you may need to do, condition-specific service suggestions, full next steps, where to get help, Bridgit card (if applicable), urgent support box (for high pressure results), suggested review timing, and a footer disclaimer.
+
+Admin-only content (insights passphrase, `?mode=review` URL, internal notes) is never included.
+
+### Ctrl+P fallback
+
+Pressing Ctrl+P without using the button still uses the existing `@media print` CSS which formats the result screen neatly. The new roadmap only appears when triggered via the button. Both routes produce clean print output.
+
+---
+
+## V2 Stage 10 — Conversation prompts expansion
+
+Professional mode's Discussion guide section is expanded with a full set of stage- and focus-specific conversation prompts, a session focus selector, and per-stage encouragement phrases.
+
+### `CONVERSATION_PROMPTS` content file
+
+All content lives in **`src/content/conversationPrompts.js`** as `CONVERSATION_PROMPTS`, keyed by `stage1`–`stage6`. Each stage has four focus categories with 4 prompts each (96 prompts total):
+
+| Category | Purpose |
+|---|---|
+| `opening` | Icebreaker and scene-setting questions |
+| `practical` | Questions about tasks, challenges, and resources |
+| `support` | Questions about networks, services, and help |
+| `reflection` | Questions that invite emotional processing |
+
+**Tone rules** (enforced by content, not code): warm and professionally curious; open-ended; non-leading; never assume how the carer feels; no clinical language; no pressure to disclose.
+
+### Session focus selector
+
+In professional mode, four chips appear in the Discussion guide section: **Opening · Practical · Support · Reflection**. Selecting a chip re-renders the prompt list for the selected focus. Selecting the active chip again deselects it (returns to the default `FOLLOWUP_PROMPTS` list).
+
+`setSessionFocus(category)` toggles `_sessionFocus` (session-only state, never persisted) and updates `aria-pressed` on each chip. `renderFollowUpPrompts(stageNum)` uses `CONVERSATION_PROMPTS` when a focus is active, `FOLLOWUP_PROMPTS` otherwise.
+
+### Session encouragement phrases
+
+`SESSION_ENCOURAGEMENT` (in `index.html`) provides a per-stage closing phrase shown at the bottom of the Discussion guide when in professional mode:
+
+| Stage | Phrase |
+|---|---|
+| 1 | You have taken an important first step by talking about your caring role today. |
+| 2 | You are building a clearer picture of what you need — that takes real effort. |
+| 3 | Every conversation about caring matters. You are doing more than many people do. |
+| 4 | Reaching out when things are hard takes real strength. Please do not carry this alone. |
+| 5 | You do not have to manage this by yourself. Support is available — please use it. |
+| 6 | The caring role is part of your story, but it is not all of it. You matter too. |
+
+### Session summary and print sheet
+
+`renderSessionSummary()` and `copySessionSummary()` now include:
+- The selected session focus label (if any)
+- The focus-specific prompts (or generic prompts if no focus selected)
+- The stage encouragement phrase
+
+The print conversation sheet (visible only in print output from the session summary screen) also shows the selected focus and its prompts.
+
+### Reset on toggle-off
+
+When professional mode is toggled off, `_sessionFocus` is reset to `null` and the focus chip aria-pressed states are cleared.
+
+### New analytics event
+
+| Event | When fired |
+|---|---|
+| `session_focus_selected` | A session focus chip is clicked (includes `focus` and `stage`) |
+
+---
+
+## Service worker: current cache version
+
+Current cache version: **`mcsc-v28`**
+
+The cache version was incremented across V2 Stages 5–10 as new content files were added:
+
+| Version | What changed |
+|---|---|
+| `mcsc-v22` | V2 Stage 4 (condition-aware resources) |
+| `mcsc-v23` | V2 Stage 9 launch readiness (branding, privacy, accessibility screens) |
+| `mcsc-v24` | V2 Stage 10 launch readiness (further landing updates) |
+| `mcsc-v25` | V2 Stage 7 (`progressionGuidance.js` added) |
+| `mcsc-v26` | V2 Stage 8 (`serviceSuggestions.js` added) |
+| `mcsc-v27` | V2 Stage 9 (printable roadmap; no new content files) |
+| `mcsc-v28` | V2 Stage 10 (`conversationPrompts.js` added) |
+
+### How to bump the cache version
+
+1. Change `CACHE_VERSION` in `sw.js`
+2. If `branding.js` was modified, also bump the `?v=N` query string in both the `<script>` tag in `index.html` and the `APP_SHELL` entry in `sw.js` — they must match
+3. Deploy
+
+### How to clear the service worker cache during testing
+
+**From DevTools:**
+1. Open DevTools → Application → Service Workers
+2. Click **Unregister** next to the sw.js registration
+3. Open Application → Cache Storage → delete the `mcsc-v*` cache entry
+4. Reload the page — the new service worker installs fresh
+
+**From the console:**
+```js
+caches.keys().then(ks => Promise.all(ks.map(k => caches.delete(k))))
+  .then(() => navigator.serviceWorker.getRegistrations()
+    .then(rs => rs.forEach(r => r.unregister())))
+  .then(() => location.reload());
+```
+
+---
+
+## All V2 content files
+
+| File | Global | What it provides |
+|---|---|---|
+| `src/content/conditions.js` | `CONDITIONS` | 8 condition options shown on V2 condition screen |
+| `src/content/nextSteps.js` | `NEXT_STAGE_GUIDANCE` | "What may happen next" bullets — 6 stages × 8 conditions + generic |
+| `src/content/responsibilities.js` | `RESPONSIBILITY_GUIDANCE` | "What you may need to do" bullets — 6 stages × 8 conditions + generic |
+| `src/content/pressureGuidance.js` | `PRESSURE_GUIDANCE` | 3 pressure level variants (low / moderate / high) |
+| `src/content/emotionalValidation.js` | `EMOTIONAL_VALIDATION` | Stage- and pressure-aware acknowledgement text |
+| `src/content/progressionGuidance.js` | `PROGRESSION_GUIDANCE` | "Caring rarely follows a straight line" reassurance (generic + stage6) |
+| `src/content/serviceSuggestions.js` | `SERVICE_SUGGESTIONS` | National service suggestions keyed by condition id |
+| `src/content/conversationPrompts.js` | `CONVERSATION_PROMPTS` | 96 conversation prompts: 6 stages × 4 focus areas × 4 prompts |
+
+All 8 files are included in `APP_SHELL` in `sw.js` and are cached on first visit.
+
+### V2 known limitations
+
+- **Session-only condition state:** `_currentCondition` is not persisted. If the user refreshes mid-check, the condition selection is lost and generic content is shown on the next result.
+- **No Welsh/translated variants:** V2 content files follow the same English-only structure as the base files. Multi-language support remains a future item.
+- **Service suggestions are national:** `serviceSuggestions.js` covers national UK organisations only. Local Solihull-specific signposting relies on the main support directory.
+- **Print roadmap requires JS:** `renderPrintableRoadmap()` depends on JavaScript being available. Pressing Ctrl+P without the button still works (via the existing `@media print` CSS), but produces the result screen layout rather than the structured roadmap document.
+- **Analytics not connected:** `logEvent()` writes to the browser console only. No external analytics provider is active pending charity sign-off.
+
+---
+
 ## Suggested future work
 
 - **Multi-language support** — create `questions-cy.js`, `stageResults-cy.js` etc. for Welsh; add a language toggle that swaps the loaded content file
@@ -1703,4 +2041,3 @@ Cache version bumped to `mcsc-v22`.
 - **Accessibility audit** — formal WCAG 2.2 AA audit with VoiceOver / NVDA and keyboard-only navigation testing
 - **Opening hours** — add an `openingHours` field to `src/content/resources.js` and display it in the directory
 - **Action plan history** — show which actions were completed across previous check-ins, using the existing localStorage structure
-- **Per-stage conversation prompts** — move `FOLLOWUP_PROMPTS` from `index.html` into `src/content/stageResults.js` so they are editable alongside other stage content
