@@ -2189,6 +2189,7 @@
       #screen-urgent-help,
       .help-now-bar,
       .stage-recs-section,
+      #service-suggestions-section,
       .location-note,
       .safeguarding-note { display: none !important; }
 
@@ -2356,6 +2357,43 @@
       text-decoration: none;
     }
     .stage-rec-phone:hover { text-decoration: underline; }
+
+    /* ── Service suggestions (V2 Stage 8) ──────────────────────── */
+    .svc-suggestions-intro {
+      font-size: 14px; color: #475569; line-height: 1.65; margin-bottom: 14px;
+    }
+    .svc-suggestion-list {
+      display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;
+    }
+    .svc-suggestion-card {
+      background: #f0fdfa; border: 1.5px solid #99f6e4;
+      border-radius: 12px; padding: 14px 16px;
+    }
+    .svc-suggestion-name {
+      font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 3px;
+    }
+    .svc-suggestion-type {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: #0f766e; margin-bottom: 8px;
+    }
+    .svc-suggestion-why {
+      font-size: 14px; color: #334155; line-height: 1.55; margin-bottom: 10px;
+    }
+    .svc-suggestion-links {
+      display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+    }
+    .svc-suggestion-url {
+      font-size: 13px; font-weight: 600; color: #0f766e;
+      text-decoration: underline; text-underline-offset: 2px;
+    }
+    .svc-suggestion-url:hover { color: #0d6b63; }
+    .svc-suggestion-phone {
+      font-size: 13px; font-weight: 600; color: #334155; text-decoration: none;
+    }
+    .svc-suggestion-phone:hover { text-decoration: underline; }
+    .svc-suggestions-footer {
+      font-size: 13px; color: #64748b; line-height: 1.55;
+    }
 
     /* ── Support Directory ─────────────────────────────────────── */
     #screen-directory { align-items: flex-start; }
@@ -3358,6 +3396,12 @@
         <div class="stage-recs-list" id="stage-recs-list" aria-label="Resources recommended for your stage"></div>
       </div>
 
+      <!-- Service suggestions (V2 Stage 8) — hidden when no condition set -->
+      <div class="result-section" id="service-suggestions-section" hidden
+           aria-label="Support that may fit your situation">
+        <!-- filled by renderServiceSuggestions() -->
+      </div>
+
       <!-- Where to get help (with links) -->
       <div class="result-section">
         <div class="result-help-card">
@@ -3638,6 +3682,7 @@
   <script src="src/content/pressureGuidance.js"></script>
   <script src="src/content/emotionalValidation.js"></script>
   <script src="src/content/progressionGuidance.js"></script>
+  <script src="src/content/serviceSuggestions.js"></script>
   <script src="src/content/stageResults.js"></script>
   <script src="src/content/resources.js"></script>
   <script src="src/content/actionPlans.js"></script>
@@ -4207,6 +4252,9 @@
       // Stage recommendations (from resources.js)
       renderStageRecommendations(result.stage);
 
+      // Service suggestions (V2 Stage 8) — condition-specific signposting
+      renderServiceSuggestions(_currentCondition ? _currentCondition.id : null);
+
       // Save current result (done after loading last, so comparison is correct)
       saveResult(result.stage, result.title, _urgentWasShown);
 
@@ -4332,6 +4380,21 @@
           ].join('\n')
         : '';
 
+      // Service suggestions text (V2 Stage 8)
+      const svcCondId = _currentCondition ? _currentCondition.id : null;
+      const svcData = (svcCondId && typeof SERVICE_SUGGESTIONS !== 'undefined')
+        ? SERVICE_SUGGESTIONS[svcCondId] : null;
+      const serviceSuggestionsText = svcData && svcData.suggestions
+        ? [
+            svcData.intro,
+            ...(svcData.suggestions || []).map(s => {
+              const phone = s.phoneLabel ? ` — ${s.phoneLabel}` : (s.phone ? ` — ${s.phone}` : '');
+              const url   = s.url ? `\n   ${s.url}` : '';
+              return `• ${s.name} (${s.type})${phone}${url}`;
+            }),
+          ].join('\n')
+        : '';
+
       return [
         `MALE CARER STAGE CHECKER — MY RESULT`,
         `Completed: ${dateStr}`,
@@ -4350,6 +4413,7 @@
         ...(responsibilitiesText ? [``, `WHAT YOU MAY NEED TO DO`, `(Practical responsibilities some carers at this stage begin to take on — at your own pace)`, responsibilitiesText] : []),
         ...(pressureText ? [``, `PRESSURE CHECK`, `(Based on your answers — not a diagnosis)`, pressureText] : []),
         ...(progressionText ? [``, `CARING RARELY FOLLOWS A STRAIGHT LINE`, progressionText] : []),
+        ...(serviceSuggestionsText ? [``, `SUPPORT THAT MAY FIT YOUR SITUATION`, serviceSuggestionsText] : []),
         ``,
         `HELPFUL TIP`,
         r.tip,
@@ -4826,6 +4890,61 @@
           '</ul>' +
           '<p class="progression-reassurance">' + data.reassurance + '</p>' +
         '</div>';
+
+      section.removeAttribute('hidden');
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       SERVICE SUGGESTIONS — V2 Stage 8
+    ══════════════════════════════════════════════════════════ */
+
+    /* Renders (or hides) the #service-suggestions-section.
+       Hidden entirely when conditionId is null (no condition selected). */
+    function renderServiceSuggestions(conditionId) {
+      var section = document.getElementById('service-suggestions-section');
+      if (!section) return;
+
+      // Hide if no condition selected or global not loaded
+      if (!conditionId || typeof SERVICE_SUGGESTIONS === 'undefined') {
+        section.setAttribute('hidden', '');
+        return;
+      }
+
+      var data = SERVICE_SUGGESTIONS[conditionId];
+      if (!data || !data.suggestions || !data.suggestions.length) {
+        section.setAttribute('hidden', '');
+        return;
+      }
+
+      var cardsHtml = data.suggestions.map(function(s) {
+        var linksHtml = '';
+        if (s.url) {
+          linksHtml += '<a class="svc-suggestion-url" href="' + s.url +
+            '" target="_blank" rel="noopener noreferrer"' +
+            ' aria-label="Visit ' + s.name + ' website (opens in new tab)">Website ↗</a>';
+        }
+        if (s.phone) {
+          var label = s.phoneLabel ? s.phoneLabel : s.phone;
+          linksHtml += '<a class="svc-suggestion-phone" href="tel:' + s.phone.replace(/\s/g,'') +
+            '" aria-label="Call ' + s.name + ': ' + label + '">' + label + '</a>';
+        }
+        return '<li class="svc-suggestion-card">' +
+          '<p class="svc-suggestion-name">' + s.name + '</p>' +
+          '<p class="svc-suggestion-type">' + s.type + '</p>' +
+          '<p class="svc-suggestion-why">' + s.why + '</p>' +
+          (linksHtml ? '<div class="svc-suggestion-links">' + linksHtml + '</div>' : '') +
+          '</li>';
+      }).join('');
+
+      section.innerHTML =
+        '<p class="result-section-label">' + data.title + '</p>' +
+        '<p class="svc-suggestions-intro">' + data.intro + '</p>' +
+        '<ul class="svc-suggestion-list" aria-label="Suggested services for your situation">' +
+          cardsHtml +
+        '</ul>' +
+        '<p class="svc-suggestions-footer">These are examples — the full support directory has more options for your area. ' +
+        '<button class="btn-text-link" onclick="showDirectory()" ' +
+        'aria-label="View the full support directory">View all support</button>.</p>';
 
       section.removeAttribute('hidden');
     }
@@ -6557,6 +6676,19 @@
       if (ssProg) {
         text += `A NOTE ON YOUR STAGE\n`;
         text += `${ssProg.reassurance}\n\n`;
+      }
+
+      // Service suggestions (V2 Stage 8)
+      const ssSvcCondId = _currentCondition ? _currentCondition.id : null;
+      const ssSvcData = (ssSvcCondId && typeof SERVICE_SUGGESTIONS !== 'undefined')
+        ? SERVICE_SUGGESTIONS[ssSvcCondId] : null;
+      if (ssSvcData && ssSvcData.suggestions && ssSvcData.suggestions.length) {
+        text += `SUPPORT THAT MAY FIT YOUR SITUATION\n`;
+        ssSvcData.suggestions.forEach(s => {
+          const contact = s.phoneLabel ? ` (${s.phoneLabel})` : (s.phone ? ` (${s.phone})` : '');
+          text += `• ${s.name}${contact}\n`;
+        });
+        text += '\n';
       }
 
       // Help links
