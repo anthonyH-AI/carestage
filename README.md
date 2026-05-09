@@ -1559,6 +1559,142 @@ If a match is found, a `console.warn` message is logged. Never shown to users. N
 
 ---
 
+## V2 Stage 4 — Condition-aware resource filtering
+
+### Overview
+
+When a carer selects a condition on the V2 condition screen, the support directory and the result page's "Recommended for your stage" section now surface the most relevant services first. All other services remain visible — nothing is hidden.
+
+---
+
+### How condition tags work
+
+Each resource in `src/content/resources.js` can include three optional fields:
+
+```js
+{
+  id: 'alzheimers-society',
+  // ... other fields ...
+  conditionTags:   ['dementia'],
+  priority:        1,
+  highlightReason: 'Leading national charity specialising in dementia carer support.',
+}
+```
+
+| Field | Purpose |
+|---|---|
+| `conditionTags` | Array of condition ids (from `conditions.js`) for which this resource is especially relevant. Omit for universal services. |
+| `priority` | Sort order among matched resources. `1` = specialist (appears first), `2` = strong local/statutory match, `3` = general support. |
+| `highlightReason` | Editorial note for content reviewers. Not shown to users. |
+
+**Valid condition ids:** `dementia` · `physical` · `mental-health` · `neurological` · `learning-disability` · `frailty` · `not-sure` · `other`
+
+---
+
+### How priority sorting works
+
+When a condition is selected, resources are split into two groups and sorted independently:
+
+1. **Matched resources** — `conditionTags` includes the selected condition. Sorted by `priority` (1 first), then shown with a green "Suggested for your situation" badge.
+2. **Unmatched resources** — shown underneath in their original order, without a badge.
+
+Within both groups, emergency and urgent services always appear at the top of the directory when the urgent-help filter is active.
+
+---
+
+### How fallback works
+
+| Scenario | Behaviour |
+|---|---|
+| Condition selected, matching resources exist | Matched resources first with badge, others underneath |
+| Condition selected, no matches for that section | All resources shown in original order, no badges |
+| No condition selected (skipped) | Original stage-based order, no badges, no suggested chip |
+| `conditionTags` omitted from a resource | Resource never badged; always in unmatched group |
+
+The result page's stage recommendations section uses the same fallback: if no condition is set, `STAGE_RECOMMENDATIONS[stageNum]` is used unchanged. If a condition is set, condition-matched resources for that stage are prepended (up to 5 total).
+
+---
+
+### The "Suggested for my situation" filter chip
+
+The support directory shows a **Suggested for my situation** chip in the filter bar when a condition has been selected. It is hidden when no condition is known.
+
+- **Off (default):** all resources shown; matched ones appear first with a badge.
+- **On:** only condition-matched resources are shown. A safeguard note appears: *"All other services remain available — remove this filter to see them."*
+
+This chip is toggled independently from the category filter chips. A carer can have "Carers support" + "Suggested for my situation" active at the same time to see only condition-relevant carer support services.
+
+---
+
+### How to add new condition-specific resources
+
+1. Add a resource object to `RESOURCES` in `src/content/resources.js` with appropriate `conditionTags` and `priority`.
+2. If it should appear on the result page for specific stages, add its id to `STAGE_RECOMMENDATIONS` for those stages.
+3. Bump `CACHE_VERSION` in `sw.js`.
+
+**Priority guidance:**
+- `1` — specialist national/local charity for that condition (e.g. Alzheimer's Society for dementia)
+- `2` — strong statutory or local match (e.g. Solihull Adult Social Care for most health conditions)
+- `3` — general support resource relevant to the condition
+
+---
+
+### Why resources are highlighted, not hidden
+
+This feature is for better signposting, not gatekeeping. A carer caring for someone with dementia may also need employment advice, financial help, or emergency services — none of which are dementia-specific. Hiding non-matched resources would risk leaving a carer without important information. The badge signals relevance without implying that other services are unsuitable.
+
+---
+
+### New condition-specific resources added (V2 Stage 4)
+
+| Resource | Condition | Priority |
+|---|---|---|
+| Alzheimer's Society | `dementia` | 1 |
+| Dementia UK — Admiral Nurses | `dementia` | 1 |
+| Mind | `mental-health` | 1 |
+| Rethink Mental Illness | `mental-health` | 2 |
+| Age UK | `frailty` | 1 |
+| Mencap | `learning-disability` | 1 |
+| National Autistic Society | `learning-disability` | 1 |
+| Headway — Brain Injury Association | `neurological` | 1 |
+
+### Existing resources tagged (V2 Stage 4)
+
+| Resource | Condition tags | Priority |
+|---|---|---|
+| Solihull Connect | dementia · physical · neurological · frailty · learning-disability | 2 |
+| Solihull Adult Social Care | dementia · physical · neurological · frailty · learning-disability | 2 |
+| NHS — Carers Support | dementia · physical · neurological · frailty · mental-health | 2 |
+| Your GP | all health conditions + not-sure · other | 2 |
+| Samaritans | mental-health · not-sure · other | 1 |
+
+---
+
+### New JS functions (V2 Stage 4)
+
+| Function | Purpose |
+|---|---|
+| `_conditionMatchesResource(resource, conditionId)` | Returns true if the resource is tagged for the given condition |
+| `toggleSuggestedFilter(el)` | Toggles the "Suggested for my situation" chip and re-renders the directory |
+
+### Modified JS functions (V2 Stage 4)
+
+| Function | What changed |
+|---|---|
+| `renderStageRecommendations(stageNum)` | Condition-aware: matched resources prepended, sorted by priority, badged. Header label updates to "Suggested support for your situation" when condition is set. |
+| `buildDirectoryCategoryFilters()` | Adds the "Suggested for my situation" chip when `_currentCondition` is set |
+| `setCategoryFilter(el, cat)` | No longer removes active state from the suggested chip |
+| `showDirectory(fromScreen)` | Resets `_dirSuggestedFilter = false` on open |
+| `filterDirectory()` | Condition-aware sort, condition badge, suggested-filter mode, safeguard note |
+
+---
+
+### Service worker
+
+Cache version bumped to `mcsc-v22`.
+
+---
+
 ## Suggested future work
 
 - **Multi-language support** — create `questions-cy.js`, `stageResults-cy.js` etc. for Welsh; add a language toggle that swaps the loaded content file
