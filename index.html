@@ -2217,6 +2217,24 @@
       .action-check-mark { opacity: 1 !important; }
       .action-card { break-inside: avoid; border: 1px solid #ccc !important; }
       .action-plan-complete { border: 1px solid #ccc !important; background: #fff !important; }
+
+      /* ── Roadmap print mode (body.printing-roadmap) ─────────── */
+      body.printing-roadmap .screen,
+      body.printing-roadmap .help-now-bar,
+      body.printing-roadmap .about-overlay,
+      body.printing-roadmap #global-error-banner,
+      body.printing-roadmap #offline-banner {
+        display: none !important;
+      }
+      body.printing-roadmap #print-roadmap-section {
+        display: block !important;
+      }
+      body.printing-roadmap {
+        font-size: 11pt; background: #fff !important;
+      }
+      /* Strip backgrounds in roadmap print */
+      .roadmap-bridgit-section { background: #fff !important; }
+      .roadmap-review-note { background: #fff !important; }
     }
 
     /* ── Help Now Bar (fixed bottom, hidden during question flow) ─ */
@@ -2394,6 +2412,101 @@
     .svc-suggestions-footer {
       font-size: 13px; color: #64748b; line-height: 1.55;
     }
+
+    /* ── Print Roadmap (V2 Stage 9) ─────────────────────────────── */
+    #print-roadmap-section { display: none; }
+
+    /* Roadmap document layout — screen-invisible, print-only */
+    .roadmap-doc {
+      font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11pt; color: #000; line-height: 1.6; max-width: 100%;
+    }
+    .roadmap-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 16pt; padding-bottom: 12pt; border-bottom: 2pt solid #000;
+    }
+    .roadmap-doc-title {
+      font-size: 22pt; font-weight: 700; letter-spacing: -0.02em;
+      color: #000; margin-bottom: 4pt;
+    }
+    .roadmap-doc-subtitle { font-size: 10pt; color: #333; }
+    .roadmap-header-meta { text-align: right; font-size: 10pt; color: #333; line-height: 1.5; }
+    .roadmap-header-meta p { margin-bottom: 2pt; }
+    .roadmap-rule { border: none; border-top: 1pt solid #ccc; margin: 14pt 0; }
+    .roadmap-section { margin-bottom: 18pt; break-inside: avoid; }
+    .roadmap-section-label {
+      font-size: 8.5pt; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #555; margin-bottom: 6pt;
+      padding-top: 10pt; border-top: 1pt solid #ccc;
+    }
+    .roadmap-stage-badge-line {
+      font-size: 10pt; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: #444; margin-bottom: 2pt;
+    }
+    .roadmap-stage-title {
+      font-size: 18pt; font-weight: 700; color: #000; margin-bottom: 8pt; line-height: 1.25;
+    }
+    .roadmap-text { font-size: 11pt; color: #000; line-height: 1.65; margin-bottom: 8pt; }
+    .roadmap-text:last-child { margin-bottom: 0; }
+    .roadmap-text-muted { font-size: 10pt; color: #333; font-style: italic; line-height: 1.6; margin-bottom: 6pt; }
+    .roadmap-hint { font-size: 9.5pt; color: #555; margin-bottom: 8pt; }
+    .roadmap-condition-note { font-size: 10pt; color: #333; margin-bottom: 6pt; }
+    .roadmap-review-timing { font-size: 10pt; color: #333; margin-top: 6pt; }
+    .roadmap-list { list-style: none; padding: 0; margin: 0 0 8pt; }
+    .roadmap-list li {
+      font-size: 11pt; color: #000; line-height: 1.55;
+      padding: 2pt 0 2pt 16pt; position: relative;
+    }
+    .roadmap-list li::before { content: '•'; position: absolute; left: 4pt; color: #555; }
+    .roadmap-ordered-list { padding-left: 20pt; margin: 0 0 8pt; }
+    .roadmap-ordered-list li { font-size: 11pt; color: #000; line-height: 1.55; padding: 2pt 0; }
+    .roadmap-pressure-badge {
+      display: inline-block; font-size: 9pt; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      border: 1pt solid #666; padding: 2pt 8pt; border-radius: 20pt;
+      margin-bottom: 8pt; color: #333;
+    }
+    .roadmap-sub-label { font-size: 9.5pt; font-weight: 700; color: #333; margin: 8pt 0 4pt; }
+    .roadmap-service-item {
+      margin-bottom: 10pt; padding-left: 10pt; border-left: 2pt solid #ccc;
+    }
+    .roadmap-service-name { font-size: 11pt; font-weight: 700; color: #000; margin-bottom: 2pt; }
+    .roadmap-service-type {
+      font-size: 9pt; color: #555; text-transform: uppercase;
+      letter-spacing: 0.05em; margin-bottom: 4pt;
+    }
+    .roadmap-service-why { font-size: 10pt; color: #333; line-height: 1.5; margin-bottom: 3pt; }
+    .roadmap-service-contact { font-size: 10pt; font-weight: 600; color: #000; margin-bottom: 2pt; }
+    .roadmap-help-item { margin-bottom: 8pt; break-inside: avoid; }
+    .roadmap-help-name { font-size: 11pt; font-weight: 700; color: #000; }
+    .roadmap-help-detail { font-size: 10pt; color: #333; margin-top: 2pt; }
+    .roadmap-help-url { font-size: 9.5pt; color: #000; word-break: break-all; margin-top: 2pt; }
+    .roadmap-urgent-box {
+      border: 2pt solid #000; padding: 12pt 14pt; margin: 14pt 0; break-inside: avoid;
+    }
+    .roadmap-urgent-title {
+      font-size: 12pt; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em; color: #000; margin-bottom: 6pt;
+    }
+    .roadmap-bridgit-section {
+      background: #f8f8f8; border: 1pt solid #ccc;
+      padding: 10pt 14pt; margin: 14pt 0; break-inside: avoid;
+    }
+    .roadmap-bridgit-title { font-size: 11pt; font-weight: 700; color: #000; margin-bottom: 4pt; }
+    .roadmap-bridgit-url { font-size: 10pt; font-weight: 700; color: #000; word-break: break-all; }
+    .roadmap-review-note {
+      background: #f5f5f5; border-left: 3pt solid #444;
+      padding: 10pt 14pt; margin: 14pt 0; break-inside: avoid;
+    }
+    .roadmap-review-note-title {
+      font-size: 9pt; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: #333; margin-bottom: 6pt;
+    }
+    .roadmap-footer {
+      margin-top: 18pt; padding-top: 10pt; border-top: 1pt solid #ccc;
+      font-size: 9pt; color: #555; line-height: 1.5;
+    }
+    .roadmap-footer p { margin-bottom: 3pt; }
 
     /* ── Support Directory ─────────────────────────────────────── */
     #screen-directory { align-items: flex-start; }
@@ -3500,12 +3613,14 @@
           </svg>
           Share
         </button>
-        <button class="btn-secondary" onclick="downloadSummary()" aria-label="Download a PDF summary of your result">
+        <button class="btn-secondary" onclick="downloadSummary()" aria-label="Print a Carer Roadmap PDF of your result">
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-            <path d="M7.5 2v8M4 7l3.5 3.5L11 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M2 12h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M4 5V2h7v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="1.5" y="5" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M4 11v2h7v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="11" cy="8" r="0.75" fill="currentColor"/>
           </svg>
-          Download summary
+          Print Carer Roadmap
         </button>
       </div>
       <div class="copy-success" id="copy-success" hidden aria-live="polite" aria-atomic="true">
@@ -4492,6 +4607,13 @@
     // Also log print events triggered via Ctrl+P / browser menu
     window.addEventListener('beforeprint', () => {
       if (_currentResult) logEvent('result_printed', { stage: _currentResult.stage, via: 'browser' });
+    });
+
+    // Restore state after roadmap print (or print cancel)
+    window.addEventListener('afterprint', function () {
+      document.body.classList.remove('printing-roadmap');
+      var rm = document.getElementById('print-roadmap-section');
+      if (rm) { rm.setAttribute('hidden', ''); rm.innerHTML = ''; }
     });
 
     /* ═══════════════════════════════════════════════════
@@ -6578,8 +6700,243 @@
 
     /* ── Download summary (print to PDF) ─────────────── */
     function downloadSummary() {
-      logEvent('result_printed');
-      window.print();
+      renderPrintableRoadmap();
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       PRINTABLE CARER ROADMAP — V2 Stage 9
+       Generates a clean A4-ready layout then calls window.print().
+       body.printing-roadmap hides all screens so only the roadmap
+       is visible to the print dialog. afterprint restores state.
+    ══════════════════════════════════════════════════════════ */
+
+    /* Escape HTML in dynamic strings */
+    function _rmEsc(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    /* Wrap content in a labelled roadmap section */
+    function _rmSection(labelText, contentHtml) {
+      if (!contentHtml) return '';
+      return '<div class="roadmap-section">' +
+        '<p class="roadmap-section-label">' + _rmEsc(labelText) + '</p>' +
+        contentHtml +
+        '</div>';
+    }
+
+    /* Unordered bullet list from string array */
+    function _rmBullets(items) {
+      if (!items || !items.length) return '';
+      return '<ul class="roadmap-list">' +
+        items.map(function (i) { return '<li>' + _rmEsc(i) + '</li>'; }).join('') +
+        '</ul>';
+    }
+
+    function renderPrintableRoadmap() {
+      if (!_currentResult) return;
+
+      var r            = _currentResult;
+      var dateStr      = formatDate(new Date().toISOString());
+      var condId       = _currentCondition ? _currentCondition.id    : null;
+      var condLabel    = _currentCondition ? _currentCondition.label  : null;
+      var pressure     = getPressureLevel(answers, _urgentWasShown);
+      var charityName  = (typeof BRANDING !== 'undefined' && BRANDING.charityName)  ? BRANDING.charityName  : 'Carers Trust Solihull';
+      var websiteUrl   = (typeof BRANDING !== 'undefined' && BRANDING.websiteUrl)   ? BRANDING.websiteUrl   : '';
+      var bridgitUrl   = (typeof HELP_LINKS !== 'undefined' && HELP_LINKS.BRIDGIT_CARE)
+                          ? HELP_LINKS.BRIDGIT_CARE : 'https://carers.bridgit.care/app/ctsol/web';
+
+      var html = '<div class="roadmap-doc">';
+
+      /* ── Header ─────────────────────────────────────────────── */
+      html +=
+        '<div class="roadmap-header">' +
+          '<div>' +
+            '<p class="roadmap-doc-title">Carer Roadmap</p>' +
+            '<p class="roadmap-doc-subtitle">Male Carer Stage Checker &middot; ' + _rmEsc(charityName) + '</p>' +
+          '</div>' +
+          '<div class="roadmap-header-meta">' +
+            '<p>Generated: ' + _rmEsc(dateStr) + '</p>' +
+            '<p>Stage ' + r.stage + ': ' + _rmEsc(r.title) + '</p>' +
+            (condLabel ? '<p>Situation: ' + _rmEsc(condLabel) + '</p>' : '') +
+          '</div>' +
+        '</div>';
+
+      /* ── Stage result ────────────────────────────────────────── */
+      html += _rmSection('Your caring stage',
+        '<p class="roadmap-stage-badge-line">Stage ' + r.stage + '</p>' +
+        '<p class="roadmap-stage-title">' + _rmEsc(r.title) + '</p>' +
+        '<p class="roadmap-text">'  + _rmEsc(r.meaning) + '</p>' +
+        (condLabel ? '<p class="roadmap-condition-note">Situation selected: ' + _rmEsc(condLabel) + '</p>' : '') +
+        (r.reviewTiming ? '<p class="roadmap-review-timing">Suggested review: ' + _rmEsc(r.reviewTiming) + '</p>' : '')
+      );
+
+      /* ── Emotional validation ────────────────────────────────── */
+      if (typeof EMOTIONAL_VALIDATION !== 'undefined') {
+        var evStage = EMOTIONAL_VALIDATION[r.stage];
+        if (evStage) {
+          var evContent = (condId && evStage[condId]) ? evStage[condId] : evStage.generic;
+          if (evContent) {
+            var evNote = (evStage.pressureNotes && evStage.pressureNotes[pressure])
+              ? '<p class="roadmap-text-muted">' + _rmEsc(evStage.pressureNotes[pressure]) + '</p>' : '';
+            html += _rmSection('How you may be feeling',
+              '<p class="roadmap-text">' + _rmEsc(evContent.intro) + '</p>' +
+              _rmBullets(evContent.feelings || []) +
+              '<p class="roadmap-text-muted">' + _rmEsc(evContent.reassurance) + '</p>' +
+              (evContent.gentlePrompt ? '<p class="roadmap-text-muted">' + _rmEsc(evContent.gentlePrompt) + '</p>' : '') +
+              evNote
+            );
+          }
+        }
+      }
+
+      /* ── Progression reassurance ─────────────────────────────── */
+      if (typeof PROGRESSION_GUIDANCE !== 'undefined') {
+        var prog = (r.stage === 6) ? PROGRESSION_GUIDANCE.stage6 : PROGRESSION_GUIDANCE.generic;
+        if (prog) {
+          html += _rmSection('A note on your stage',
+            '<p class="roadmap-text">' + _rmEsc(prog.intro) + '</p>' +
+            _rmBullets(prog.points || []) +
+            '<p class="roadmap-text-muted">' + _rmEsc(prog.reassurance) + '</p>'
+          );
+        }
+      }
+
+      /* ── Pressure check ──────────────────────────────────────── */
+      if (typeof PRESSURE_GUIDANCE !== 'undefined') {
+        var pd = PRESSURE_GUIDANCE[pressure];
+        if (pd) {
+          html += _rmSection('Pressure check',
+            '<p class="roadmap-pressure-badge">' + _rmEsc(pd.label) + '</p>' +
+            '<p class="roadmap-text">' + _rmEsc(pd.intro) + '</p>' +
+            (pd.signs && pd.signs.length
+              ? '<p class="roadmap-sub-label">Signs you may be experiencing</p>' + _rmBullets(pd.signs)
+              : '') +
+            (pd.nextSteps && pd.nextSteps.length
+              ? '<p class="roadmap-sub-label">What may help</p>' + _rmBullets(pd.nextSteps)
+              : '') +
+            '<p class="roadmap-text-muted">' + _rmEsc(pd.supportPrompt) + '</p>'
+          );
+        }
+      }
+
+      /* ── What may happen next ────────────────────────────────── */
+      if (typeof NEXT_STAGE_GUIDANCE !== 'undefined') {
+        var nextItems = getNextGuidance(r.stage, condId);
+        if (nextItems && nextItems.length) {
+          html += _rmSection('What may happen next',
+            '<p class="roadmap-hint">Some situations other carers at this stage have noticed — not a prediction</p>' +
+            _rmBullets(nextItems)
+          );
+        }
+      }
+
+      /* ── What you may need to do ─────────────────────────────── */
+      if (typeof RESPONSIBILITY_GUIDANCE !== 'undefined') {
+        var respItems = getResponsibilityGuidance(r.stage, condId);
+        if (respItems && respItems.length) {
+          html += _rmSection('What you may need to do',
+            '<p class="roadmap-hint">Practical responsibilities some carers at this stage begin to take on — at your own pace</p>' +
+            _rmBullets(respItems)
+          );
+        }
+      }
+
+      /* ── Service suggestions ─────────────────────────────────── */
+      if (condId && typeof SERVICE_SUGGESTIONS !== 'undefined') {
+        var svc = SERVICE_SUGGESTIONS[condId];
+        if (svc && svc.suggestions && svc.suggestions.length) {
+          var svcHtml = '<p class="roadmap-text">' + _rmEsc(svc.intro) + '</p>';
+          svc.suggestions.forEach(function (s) {
+            svcHtml +=
+              '<div class="roadmap-service-item">' +
+                '<p class="roadmap-service-name">'  + _rmEsc(s.name) + '</p>' +
+                '<p class="roadmap-service-type">'  + _rmEsc(s.type) + '</p>' +
+                '<p class="roadmap-service-why">'   + _rmEsc(s.why)  + '</p>' +
+                (s.phoneLabel && s.phone
+                  ? '<p class="roadmap-service-contact">' + _rmEsc(s.phoneLabel) + ': ' + _rmEsc(s.phone) + '</p>'
+                  : (s.phone ? '<p class="roadmap-service-contact">' + _rmEsc(s.phone) + '</p>' : '')) +
+                (s.url ? '<p class="roadmap-service-contact">' + _rmEsc(s.url) + '</p>' : '') +
+              '</div>';
+          });
+          html += _rmSection('Support that may fit your situation', svcHtml);
+        }
+      }
+
+      /* ── Suggested next steps ────────────────────────────────── */
+      if (r.steps && r.steps.length) {
+        var stepsHtml = '<ol class="roadmap-ordered-list">' +
+          r.steps.map(function (s) { return '<li>' + _rmEsc(s) + '</li>'; }).join('') +
+          '</ol>';
+        html += _rmSection('Suggested next steps', stepsHtml);
+      }
+
+      /* ── Where to get help ───────────────────────────────────── */
+      if (r.help && r.help.length) {
+        var helpHtml = r.help.map(function (h) {
+          return '<div class="roadmap-help-item">' +
+            '<p class="roadmap-help-name">' + _rmEsc(h.label) + '</p>' +
+            '<p class="roadmap-help-detail">' + _rmEsc(h.detail) + '</p>' +
+            (h.url ? '<p class="roadmap-help-url">' + _rmEsc(h.url) + '</p>' : '') +
+            '</div>';
+        }).join('');
+        html += _rmSection('Where to get help', helpHtml);
+      }
+
+      /* ── Urgent support (if relevant) ────────────────────────── */
+      if (_urgentWasShown || pressure === 'high') {
+        html +=
+          '<div class="roadmap-urgent-box">' +
+            '<p class="roadmap-urgent-title">Urgent support</p>' +
+            '<p class="roadmap-text"><strong>If you or anyone else is in immediate danger, call 999.</strong></p>' +
+            '<p class="roadmap-text">If you are struggling right now, please reach out today. ' +
+            'Your GP, a local carer support service, or the Samaritans (116 123, free, 24/7) can help.</p>' +
+          '</div>';
+      }
+
+      /* ── Bridgit Care AI ─────────────────────────────────────── */
+      var bridgitMsg = (r.bridgitMessage) ? r.bridgitMessage
+        : 'You can use Bridgit Care AI to ask questions and get practical guidance at any time.';
+      html +=
+        '<div class="roadmap-bridgit-section">' +
+          '<p class="roadmap-bridgit-title">Get support anytime — Bridgit Care AI (24/7)</p>' +
+          '<p class="roadmap-text">' + _rmEsc(bridgitMsg) + '</p>' +
+          '<p class="roadmap-bridgit-url">' + _rmEsc(bridgitUrl) + '</p>' +
+        '</div>';
+
+      /* ── Review encouragement ────────────────────────────────── */
+      var reviewPhrase = r.reviewTiming
+        ? 'consider checking your stage again ' + r.reviewTiming.toLowerCase()
+        : 'consider checking your stage again in a few weeks';
+      html +=
+        '<div class="roadmap-review-note">' +
+          '<p class="roadmap-review-note-title">A note for later</p>' +
+          '<p class="roadmap-text">Caring situations change over time. When they do, ' +
+          _rmEsc(reviewPhrase) + ', or sooner if anything significant changes.</p>' +
+          '<p class="roadmap-text">Returning to this tool can help you stay connected to the right support for where you are.</p>' +
+        '</div>';
+
+      /* ── Footer ──────────────────────────────────────────────── */
+      html +=
+        '<hr class="roadmap-rule">' +
+        '<div class="roadmap-footer">' +
+          '<p>This roadmap is for information and guidance only. It does not replace professional, medical, or care advice.</p>' +
+          '<p>Generated by Male Carer Stage Checker' + (websiteUrl ? ' &middot; ' + _rmEsc(websiteUrl) : '') + '</p>' +
+          '<p>Provided by ' + _rmEsc(charityName) + '</p>' +
+        '</div>';
+
+      html += '</div>'; // close roadmap-doc
+
+      /* Inject, show, and print */
+      var section = document.getElementById('print-roadmap-section');
+      if (!section) return;
+      section.innerHTML = html;
+      section.removeAttribute('hidden');
+      document.body.classList.add('printing-roadmap');
+      logEvent('roadmap_printed', { stage: r.stage });
+      setTimeout(function () { window.print(); }, 80);
     }
 
     /* ── Copy session summary ─────────────────────────── */
@@ -7773,6 +8130,9 @@
       <button class="btn-outline" onclick="closeAbout()" style="margin-top:24px;max-width:100%;">Close</button>
     </div>
   </div>
+
+  <!-- Print Roadmap container (V2 Stage 9) — populated and shown by renderPrintableRoadmap() -->
+  <section id="print-roadmap-section" hidden aria-label="Printable carer roadmap"></section>
 
 </body>
 </html>

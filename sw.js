@@ -7,7 +7,7 @@
    to force old caches to be cleared on next visit.
 ════════════════════════════════════════════════════════════════ */
 
-const CACHE_VERSION = 'mcsc-v26';
+const CACHE_VERSION = 'mcsc-v27';
 
 const APP_SHELL = [
   './',
