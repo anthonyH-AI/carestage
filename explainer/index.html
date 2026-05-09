@@ -428,6 +428,179 @@
       .stats-inner { grid-template-columns: repeat(2, 1fr); }
       .nav-links { display: none; }
     }
+
+    /* ── Analytics dashboard ─────────────────────────────────── */
+    .analytics-dash {
+      border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden;
+      margin-bottom: 32px;
+    }
+    .analytics-status {
+      display: flex; align-items: center; justify-content: space-between;
+      background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+      padding: 12px 20px; gap: 12px; flex-wrap: wrap;
+    }
+    .analytics-status-left { font-size: 13px; color: #64748b; line-height: 1.5; }
+    .analytics-status-left strong { color: #0f172a; }
+    .analytics-refresh-btn {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;
+      padding: 6px 14px; font-size: 12px; font-weight: 600; color: #334155;
+      cursor: pointer; transition: all 0.12s; white-space: nowrap; flex-shrink: 0;
+    }
+    .analytics-refresh-btn:hover { background: #0f766e; color: #fff; border-color: #0f766e; }
+
+    .analytics-empty { padding: 48px 24px; text-align: center; color: #64748b; }
+    .analytics-empty-icon { font-size: 40px; margin-bottom: 16px; }
+    .analytics-empty h3 { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+    .analytics-empty p { font-size: 14px; line-height: 1.65; max-width: 400px; margin: 0 auto 20px; }
+
+    .analytics-kpi-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid #e2e8f0;
+    }
+    @media (max-width: 700px) { .analytics-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+    .analytics-kpi { padding: 22px 20px; border-right: 1px solid #e2e8f0; text-align: center; }
+    .analytics-kpi:last-child { border-right: none; }
+    .analytics-kpi-num { font-size: 34px; font-weight: 800; color: #0f766e; line-height: 1; margin-bottom: 5px; }
+    .analytics-kpi-num.kpi-urgent { color: #dc2626; }
+    .analytics-kpi-num.kpi-neutral { color: #475569; }
+    .analytics-kpi-label { font-size: 12px; font-weight: 700; color: #0f172a; margin-bottom: 3px; }
+    .analytics-kpi-sub { font-size: 11px; color: #94a3b8; line-height: 1.4; }
+
+    .analytics-panels { padding: 24px; display: flex; flex-direction: column; gap: 28px; }
+    .analytics-panel-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #94a3b8; margin-bottom: 14px;
+    }
+
+    .dist-rows { display: flex; flex-direction: column; gap: 9px; }
+    .dist-row { display: grid; grid-template-columns: 180px 1fr 58px; align-items: center; gap: 12px; }
+    .dist-row-label { font-size: 12.5px; color: #334155; font-weight: 500; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dist-bar-track { background: #f1f5f9; border-radius: 4px; height: 12px; overflow: hidden; }
+    .dist-bar-fill { height: 100%; border-radius: 4px; min-width: 3px; transition: width 0.4s ease; }
+    .dist-row-count { font-size: 12px; color: #64748b; }
+    @media (max-width: 640px) {
+      .dist-row { grid-template-columns: 70px 1fr 44px; gap: 8px; }
+      .dist-row-label { font-size: 11px; }
+    }
+
+    .feedback-bars { display: flex; flex-direction: column; gap: 10px; }
+    .feedback-bar-row { display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; gap: 12px; }
+    .feedback-bar-label { font-size: 13px; font-weight: 700; text-align: right; }
+    .feedback-bar-label.yes { color: #15803d; }
+    .feedback-bar-label.no  { color: #dc2626; }
+    .feedback-bar-track { background: #f1f5f9; border-radius: 4px; height: 12px; overflow: hidden; }
+    .feedback-bar-fill-yes { background: #22c55e; height: 100%; border-radius: 4px; min-width: 3px; }
+    .feedback-bar-fill-no  { background: #f87171; height: 100%; border-radius: 4px; min-width: 3px; }
+    .feedback-bar-count { font-size: 12px; color: #64748b; }
+    .feedback-pos-rate { font-size: 14px; font-weight: 700; color: #0f172a; margin-top: 12px; }
+    .feedback-pos-rate span { font-size: 13px; font-weight: 400; color: #64748b; }
+
+    .history-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .history-tbl th {
+      background: #f8fafc; font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: #94a3b8; padding: 8px 14px;
+      text-align: left; border-bottom: 1px solid #e2e8f0;
+    }
+    .history-tbl td { padding: 9px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+    .history-tbl tr:last-child td { border-bottom: none; }
+    .history-tbl tr:hover td { background: #fafafa; }
+    .history-stage-badge {
+      display: inline-flex; align-items: center;
+      font-size: 12px; font-weight: 700; color: #fff;
+      padding: 2px 10px; border-radius: 10px; white-space: nowrap;
+    }
+    .history-urgent { font-size: 12px; color: #dc2626; font-weight: 600; }
+    .history-date { font-size: 12px; color: #64748b; white-space: nowrap; }
+
+    .data-scope-notice {
+      background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;
+      padding: 14px 16px; font-size: 13px; color: #78350f; line-height: 1.65;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .data-scope-notice ul { padding-left: 16px; margin: 6px 0 0; }
+    .data-scope-notice li { margin-bottom: 3px; }
+
+    details.analytics-events-ref {
+      border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden;
+      margin-bottom: 24px;
+    }
+    details.analytics-events-ref[open] { border-color: #0f766e; }
+    summary.analytics-events-summary {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; cursor: pointer; list-style: none;
+      font-size: 14px; font-weight: 700; color: #0f172a; user-select: none;
+    }
+    summary.analytics-events-summary::-webkit-details-marker { display: none; }
+    summary.analytics-events-summary:hover { background: #f8fafc; }
+    .analytics-events-chevron {
+      color: #94a3b8; font-size: 16px; transition: transform 0.2s;
+    }
+    details.analytics-events-ref[open] .analytics-events-chevron { transform: rotate(180deg); }
+    .analytics-events-body { padding: 0 18px 18px; }
+
+    /* ── Analytics lock screen ───────────────────────── */
+    .analytics-lock {
+      padding: 44px 24px 36px; text-align: center;
+    }
+    .analytics-lock-icon { font-size: 36px; margin-bottom: 14px; line-height: 1; }
+    .analytics-lock-title {
+      font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 6px;
+    }
+    .analytics-lock-desc {
+      font-size: 13px; color: #64748b; line-height: 1.6;
+      max-width: 340px; margin: 0 auto 22px;
+    }
+    .analytics-lock-form {
+      display: flex; gap: 8px; max-width: 320px; margin: 0 auto;
+    }
+    .analytics-lock-input {
+      flex: 1; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;
+      font-size: 14px; color: #1e293b; background: #fff;
+      font-family: "SF Mono", "Fira Code", monospace;
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .analytics-lock-input:focus {
+      border-color: #0f766e; box-shadow: 0 0 0 3px #ccfbf1;
+    }
+    .analytics-lock-btn {
+      padding: 9px 18px; background: #0f766e; color: #fff; border: none;
+      border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; white-space: nowrap; transition: background 0.12s;
+    }
+    .analytics-lock-btn:hover { background: #0d5c56; }
+    .analytics-lock-error {
+      font-size: 13px; color: #dc2626; margin-top: 10px;
+      display: none;
+    }
+    .analytics-lock-hint {
+      font-size: 12px; color: #94a3b8; margin-top: 14px;
+    }
+
+    /* ── Analytics action buttons (export / reset) ────── */
+    .analytics-action-btn {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;
+      padding: 6px 13px; font-size: 12px; font-weight: 600; color: #334155;
+      cursor: pointer; transition: all 0.12s; white-space: nowrap;
+      font-family: inherit;
+    }
+    .analytics-action-btn.export {
+      color: #0f766e; border-color: #a7f3d0;
+    }
+    .analytics-action-btn.export:hover {
+      background: #f0fdfa; border-color: #0f766e;
+    }
+    .analytics-action-btn.export:disabled {
+      opacity: 0.6; cursor: default;
+    }
+    .analytics-action-btn.danger {
+      color: #b91c1c; border-color: #fecaca;
+    }
+    .analytics-action-btn.danger:hover {
+      background: #fef2f2; border-color: #dc2626;
+    }
+    .analytics-status-actions {
+      display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -456,7 +629,7 @@
 <!-- ── Hero ────────────────────────────────────────────────────── -->
 <header class="hero">
   <div class="hero-inner">
-    <p class="hero-eyebrow">Carers Trust Solihull · Version 1.0 · SW mcsc-v28</p>
+    <p class="hero-eyebrow">Carers Trust Solihull · Version 1.0 · SW mcsc-v31</p>
     <h1>CareStage V2</h1>
     <p>A free, anonymous, mobile-first tool that helps male carers understand where they are in their caring journey — and connects them with the right support at the right stage.</p>
     <div class="hero-actions">
@@ -1220,7 +1393,7 @@
     <ol style="font-size:14px;color:#475569;line-height:2;padding-left:20px;">
       <li>Complete all 10 pre-launch checks at <code>[TOOL URL]/?mode=review</code></li>
       <li>Set <code>contentStatus: "approved"</code> and <code>launchMode: "public"</code> in <code>branding.js</code></li>
-      <li>Bump <code>CACHE_VERSION</code> in <code>sw.js</code> (currently <code>mcsc-v28</code>)</li>
+      <li>Bump <code>CACHE_VERSION</code> in <code>sw.js</code> (currently <code>mcsc-v31</code>)</li>
       <li>Bump the <code>?v=N</code> cache-buster on the <code>branding.js</code> script tag in <code>index.html</code> and match it in <code>APP_SHELL</code> in <code>sw.js</code></li>
       <li>Deploy. Test on a real mobile device.</li>
     </ol>
@@ -1352,56 +1525,83 @@
 <!-- ── Analytics ─────────────────────────────────────────────────── -->
 <section id="analytics" class="section">
   <div class="content-area">
-    <p class="section-label">Analytics Events</p>
-    <h2>What <code>logEvent()</code> tracks</h2>
-    <p class="section-intro">All events are logged to the browser console and written as anonymous aggregates to <code>mcsc_stats</code> in localStorage. No external service is connected. The table below lists every named event and when it fires.</p>
+    <p class="section-label">Analytics</p>
+    <h2>Usage data and events</h2>
+    <p class="section-intro">CareStage stores lightweight anonymous usage aggregates in <code>localStorage.mcsc_stats</code>. No external service is connected. The dashboard below reads data from <strong>this device only</strong> — it cannot aggregate across users.</p>
 
-    <div style="overflow-x:auto;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:28px;">
-      <table class="ls-table">
-        <thead>
-          <tr><th>Event name</th><th>Fires when</th><th>Data payload</th></tr>
-        </thead>
-        <tbody>
-          <tr class="group-row" style=""><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Core journey</td></tr>
-          <tr><td>check_started</td><td>User clicks Start (or enters via <code>?stage=N</code>)</td><td>—</td></tr>
-          <tr><td>condition_selected</td><td>Carer selects a condition on the V2 condition screen</td><td><code>{ id, label }</code></td></tr>
-          <tr><td>condition_skipped</td><td>Carer taps "Skip" on condition screen</td><td>—</td></tr>
-          <tr><td>check_completed</td><td>Result screen rendered after question flow</td><td><code>{ stageNum }</code></td></tr>
-          <tr><td>urgent_support_shown</td><td>Urgent screen shown (safety trigger fired)</td><td>—</td></tr>
-
-          <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Result page interactions</td></tr>
-          <tr><td>result_copied</td><td>"Copy result" button tapped</td><td>—</td></tr>
-          <tr><td>result_shared</td><td>Native Share API invoked (mobile)</td><td>—</td></tr>
-          <tr><td>result_printed</td><td>Ctrl+P or "Download PDF" via browser print</td><td>—</td></tr>
-          <tr><td>action_clicked</td><td>Main action button on result tapped</td><td><code>{ stageNum, url }</code></td></tr>
-          <tr><td>feedback_yes</td><td>"Yes, this was helpful" tapped</td><td><code>{ stageNum }</code></td></tr>
-          <tr><td>feedback_no</td><td>"Not really" tapped</td><td><code>{ stageNum }</code></td></tr>
-          <tr><td>ab_tip_shown</td><td>A/B test variant tip rendered (when <code>abTestVariant: 'b'</code>)</td><td><code>{ stageNum }</code></td></tr>
-
-          <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Action plan</td></tr>
-          <tr><td>action_plan_toggled</td><td>Action plan section expanded or collapsed</td><td>—</td></tr>
-          <tr><td>action_plan_copied</td><td>"Copy action plan" button tapped</td><td>—</td></tr>
-          <tr><td>action_plan_reset</td><td>Action plan reset to unchecked</td><td>—</td></tr>
-
-          <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Directory &amp; help</td></tr>
-          <tr><td>directory_opened</td><td>Support directory screen shown</td><td>—</td></tr>
-          <tr><td>urgent_help_opened</td><td>"Get help now" button tapped (persistent bar)</td><td>—</td></tr>
-
-          <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Professional mode</td></tr>
-          <tr><td>session_copied</td><td>"Copy session summary" button tapped</td><td>—</td></tr>
-
-          <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Reminders &amp; governance</td></tr>
-          <tr><td>reminder_set</td><td>User sets a check-in reminder</td><td><code>{ intervalDays }</code></td></tr>
-          <tr><td>reminder_shown</td><td>Reminder banner appears on landing (due date reached)</td><td>—</td></tr>
-          <tr><td>report_copied</td><td>"Copy impact report" on Insights tapped</td><td>—</td></tr>
-
-          <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Info screens</td></tr>
-          <tr><td>privacy_viewed</td><td>Privacy screen shown</td><td>—</td></tr>
-          <tr><td>accessibility_viewed</td><td>Accessibility statement screen shown</td><td>—</td></tr>
-          <tr><td>data_cleared</td><td>User clears all saved data</td><td>—</td></tr>
-        </tbody>
-      </table>
+    <!-- ── Live analytics dashboard ──────────────────────── -->
+    <div class="analytics-dash" id="analytics-dash">
+      <!-- Populated by renderAnalyticsDash() on page load -->
+      <div class="analytics-status">
+        <div class="analytics-status-left">Loading…</div>
+      </div>
     </div>
+
+    <!-- ── Event reference (collapsible) ─────────────────── -->
+    <details class="analytics-events-ref">
+      <summary class="analytics-events-summary">
+        <span>Event reference — what <code>logEvent()</code> tracks</span>
+        <span class="analytics-events-chevron">▾</span>
+      </summary>
+      <div class="analytics-events-body">
+        <p style="font-size:13px;color:#475569;margin:14px 0 12px;">All events are logged to the browser console and written as anonymous aggregates to <code>mcsc_stats</code>. The table lists every named event and when it fires.</p>
+        <div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0;">
+          <table class="ls-table">
+            <thead>
+              <tr><th>Event name</th><th>Fires when</th><th>Data payload</th></tr>
+            </thead>
+            <tbody>
+              <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Core journey</td></tr>
+              <tr><td>check_started</td><td>User clicks Start (or enters via <code>?stage=N</code>)</td><td>—</td></tr>
+              <tr><td>condition_selected</td><td>Carer selects a condition on the V2 condition screen</td><td><code>{ id, label }</code></td></tr>
+              <tr><td>condition_skipped</td><td>Carer taps "Skip" on condition screen</td><td>—</td></tr>
+              <tr><td>check_completed</td><td>Result screen rendered after question flow</td><td><code>{ stage }</code></td></tr>
+              <tr><td>urgent_support_shown</td><td>Urgent screen shown (safety trigger fired)</td><td>—</td></tr>
+
+              <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Result page</td></tr>
+              <tr><td>result_copied</td><td>"Copy result" button tapped</td><td><code>{ stage }</code></td></tr>
+              <tr><td>result_shared</td><td>Native Share API invoked (mobile)</td><td><code>{ stage }</code></td></tr>
+              <tr><td>result_printed</td><td>Ctrl+P or "Download PDF" via browser print</td><td><code>{ stage }</code></td></tr>
+              <tr><td>action_clicked</td><td>Main action button on result tapped</td><td><code>{ stage }</code></td></tr>
+              <tr><td>feedback_yes</td><td>"Yes, this was helpful" tapped</td><td><code>{ stage }</code></td></tr>
+              <tr><td>feedback_no</td><td>"Not really" tapped</td><td><code>{ stage }</code></td></tr>
+              <tr><td>weekly_pathway_rendered</td><td>"Ideas for this week" section rendered</td><td><code>{ stage }</code></td></tr>
+              <tr><td>ab_tip_shown</td><td>A/B test variant tip rendered (when <code>abTestVariant: 'b'</code>)</td><td><code>{ stage }</code></td></tr>
+
+              <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Action plan</td></tr>
+              <tr><td>action_plan_toggled</td><td>Action plan item ticked or unticked</td><td><code>{ actionId, completed, stage }</code></td></tr>
+              <tr><td>action_plan_copied</td><td>"Copy action plan" button tapped</td><td><code>{ stage }</code></td></tr>
+              <tr><td>action_plan_reset</td><td>Action plan reset to unchecked</td><td><code>{ stage }</code></td></tr>
+
+              <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Directory &amp; help</td></tr>
+              <tr><td>directory_opened</td><td>Support directory screen shown</td><td>—</td></tr>
+              <tr><td>urgent_help_opened</td><td>"Get help now" bar tapped</td><td>—</td></tr>
+
+              <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Professional mode</td></tr>
+              <tr><td>professional_mode_on</td><td>Professional mode enabled</td><td>—</td></tr>
+              <tr><td>professional_mode_off</td><td>Professional mode disabled</td><td>—</td></tr>
+              <tr><td>session_copied</td><td>"Copy session summary" tapped</td><td>—</td></tr>
+              <tr><td>session_summary_viewed</td><td>Session summary screen shown</td><td><code>{ stage }</code></td></tr>
+              <tr><td>agreed_step_selected</td><td>Carer agrees a next step in pro mode</td><td><code>{ stage, stepIndex }</code></td></tr>
+
+              <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">V2.5 features</td></tr>
+              <tr><td>accessibility_settings_opened</td><td>Display options panel opened</td><td>—</td></tr>
+              <tr><td>a11y_setting_changed</td><td>An accessibility toggle switched</td><td><code>{ key, value }</code></td></tr>
+              <tr><td>a11y_settings_reset</td><td>Display options reset to defaults</td><td>—</td></tr>
+              <tr><td>contingency_planner_opened</td><td>Contingency planner screen shown</td><td>—</td></tr>
+
+              <tr class="group-row"><td colspan="3" style="background:#f8fafc;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#94a3b8;padding:8px 14px;">Reminders &amp; info screens</td></tr>
+              <tr><td>reminder_set</td><td>User sets a check-in reminder</td><td><code>{ intervalDays }</code></td></tr>
+              <tr><td>reminder_shown</td><td>Reminder banner shown (due date reached)</td><td>—</td></tr>
+              <tr><td>privacy_viewed</td><td>Privacy screen shown</td><td>—</td></tr>
+              <tr><td>accessibility_viewed</td><td>Accessibility statement screen shown</td><td>—</td></tr>
+              <tr><td>data_cleared</td><td>User clears saved data</td><td><code>{ type }</code></td></tr>
+              <tr><td>report_copied</td><td>"Copy impact report" on Insights tapped</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
 
     <div class="callout callout-info">
       <span class="callout-icon">ℹ️</span>
@@ -1447,7 +1647,9 @@
           <tr class="group-row"><td colspan="3">Governance and app shell</td></tr>
           <tr><td>contentReviewLog.js</td><td>CONTENT_REVIEW_LOG</td><td>Add an entry after each full content review — shown on Insights "What's new" panel</td></tr>
           <tr><td>index.html</td><td>—</td><td>All HTML, CSS, and JS logic. Only touch for bug fixes or new features — content lives in src/</td></tr>
-          <tr><td>sw.js</td><td>—</td><td>Service Worker. Bump CACHE_VERSION (mcsc-v28) whenever any content file changes</td></tr>
+          <tr><td>src/content/contingencyPrompts.js</td><td>CONTINGENCY_PROMPTS</td><td>Contingency planner sections and prompts — section and prompt IDs must not be renamed after deployment</td></tr>
+          <tr><td>src/content/weeklyPathways.js</td><td>WEEKLY_PATHWAYS</td><td>Gentle week-ahead guidance for all 6 stages — 4 time buckets per stage (today, next few days, this week, when ready)</td></tr>
+          <tr><td>sw.js</td><td>—</td><td>Service Worker. Bump CACHE_VERSION (mcsc-v31) whenever any content file changes</td></tr>
           <tr><td>manifest.json</td><td>—</td><td>PWA manifest — app name, icons, display mode</td></tr>
         </tbody>
       </table>
@@ -1455,7 +1657,7 @@
 
     <pre><code>male-carer-stage-checker/
 ├── index.html               ← app shell: HTML, CSS, all JS logic
-├── sw.js                    ← service worker  (mcsc-v28)
+├── sw.js                    ← service worker  (mcsc-v31)
 ├── manifest.json            ← PWA manifest
 ├── icon.svg
 ├── QA-TEST-SCRIPT.md        ← manual QA checklist (175 items)
@@ -1490,7 +1692,7 @@
   <div class="content-area">
     <div>
       <strong>CareStage V2 — Explainer Dashboard</strong><br>
-      Carers Trust Solihull · Service Worker <code style="color:#64748b;">mcsc-v28</code> · Content v1.0
+      Carers Trust Solihull · Service Worker <code style="color:#64748b;">mcsc-v31</code> · Content v1.0
     </div>
     <div style="text-align:right;">
       <a href="../">Live tool ↗</a> &nbsp;·&nbsp;
@@ -1501,6 +1703,12 @@
 </footer>
 
 </div><!-- end page-wrap -->
+
+<!-- ── Admin config (passphrase for analytics gate) ─────────────── -->
+<!-- Loads ADMIN_CONFIG from the main app. If the file is unavailable
+     (e.g. served from a different origin) the gate falls back to a
+     hardcoded default — change both to keep them in sync. -->
+<script src="../src/config/admin.js"></script>
 
 <!-- ── Simulator JS ─────────────────────────────────────────────── -->
 <script>
@@ -1636,9 +1844,406 @@
     if (sim) sim.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
+  /* ──────────────────────────────────────────────────────────────
+     ANALYTICS DASHBOARD — reads from localStorage.mcsc_stats
+     Data is scoped to this browser / device only.
+  ────────────────────────────────────────────────────────────── */
+
+  var STAGE_COLORS  = ["#059669","#0284c7","#d97706","#ea580c","#dc2626","#7c3aed"];
+  var STAGE_TITLES  = ["Just Found Out","Getting Your Bearings","Becoming the Carer","Building a Routine","Keeping Going","Review, Crisis, or Change"];
+
+  // Session key that marks the analytics gate as unlocked for this tab.
+  // Falls back to the hardcoded default if admin.js failed to load.
+  var ANALYTICS_SESSION_KEY = "mcsc_analytics_unlocked";
+  function _analyticsPass() {
+    return (typeof ADMIN_CONFIG !== "undefined" && ADMIN_CONFIG.insightsPassphrase)
+      ? ADMIN_CONFIG.insightsPassphrase
+      : "cts-insights";
+  }
+
+  function renderAnalyticsDash() {
+    var dash = document.getElementById("analytics-dash");
+    if (!dash) return;
+
+    // ── Gate: require passphrase (session-scoped) ──────────────────
+    var unlocked = false;
+    try { unlocked = sessionStorage.getItem(ANALYTICS_SESSION_KEY) === "1"; } catch(e) {}
+    if (!unlocked) {
+      _renderAnalyticsLock();
+      return;
+    }
+
+    // ── Read localStorage ──────────────────────────────────────────
+    var stats = {}, feedback = [], history = [];
+    try { stats    = JSON.parse(localStorage.getItem("mcsc_stats"))   || {}; } catch(e) {}
+    try { feedback = JSON.parse(localStorage.getItem("mcsc_feedback")) || []; } catch(e) {}
+    try { history  = JSON.parse(localStorage.getItem("mcsc_history"))  || []; } catch(e) {}
+
+    var now = new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+    // ── Status bar (with Refresh, Export, Reset) ───────────────────
+    var statusBar =
+      '<div class="analytics-status">' +
+        '<div class="analytics-status-left">' +
+          'Reading from <code>localStorage.mcsc_stats</code> on this device &nbsp;&middot;&nbsp; ' +
+          'Refreshed at <strong>' + now + '</strong>' +
+        '</div>' +
+        '<div class="analytics-status-actions">' +
+          '<button class="analytics-refresh-btn" onclick="renderAnalyticsDash()">&#8635; Refresh</button>' +
+          '<button class="analytics-action-btn export" id="analytics-export-btn" onclick="exportAnalyticsSummary()">&#8659; Export summary</button>' +
+          '<button class="analytics-action-btn danger" onclick="resetAnalyticsData()">&#8855; Reset data</button>' +
+        '</div>' +
+      '</div>';
+
+    var started   = stats.checksStarted  || 0;
+    var completed = stats.checksCompleted || 0;
+    var urgent    = stats.urgentShown    || 0;
+    var feedYes   = stats.feedbackYes    || 0;
+    var feedNo    = stats.feedbackNo     || 0;
+    var dist      = stats.stageDistribution || {};
+
+    // ── Empty state ────────────────────────────────────────────────
+    var hasData = started > 0 || completed > 0 || Object.keys(dist).length > 0;
+    if (!hasData) {
+      dash.innerHTML = statusBar +
+        '<div class="analytics-empty">' +
+          '<div class="analytics-empty-icon">📊</div>' +
+          '<h3>No usage data found on this device</h3>' +
+          '<p>Data is recorded when the main CareStage tool is used in this browser. ' +
+             'Open the tool, complete a check, then click Refresh.</p>' +
+          '<a href="../" style="display:inline-flex;align-items:center;gap:6px;' +
+             'background:#0f766e;color:#fff;padding:9px 18px;border-radius:8px;' +
+             'font-size:14px;font-weight:600;text-decoration:none;margin-top:4px;">' +
+            'Open the main tool &#8599;' +
+          '</a>' +
+        '</div>';
+      return;
+    }
+
+    // ── KPI cards ──────────────────────────────────────────────────
+    var completionRate = started > 0 ? Math.round((completed / started) * 100) : 0;
+    var urgentClass    = urgent > 0 ? " kpi-urgent" : " kpi-neutral";
+
+    var kpis =
+      '<div class="analytics-kpi-grid">' +
+        '<div class="analytics-kpi">' +
+          '<div class="analytics-kpi-num">' + started + '</div>' +
+          '<div class="analytics-kpi-label">Checks started</div>' +
+          '<div class="analytics-kpi-sub">on this device</div>' +
+        '</div>' +
+        '<div class="analytics-kpi">' +
+          '<div class="analytics-kpi-num">' + completed + '</div>' +
+          '<div class="analytics-kpi-label">Checks completed</div>' +
+          '<div class="analytics-kpi-sub">' + (started > 0 ? completionRate + '% of starts' : '&mdash;') + '</div>' +
+        '</div>' +
+        '<div class="analytics-kpi">' +
+          '<div class="analytics-kpi-num' + (completionRate < 40 && started > 3 ? ' kpi-neutral' : '') + '">' + completionRate + '%</div>' +
+          '<div class="analytics-kpi-label">Completion rate</div>' +
+          '<div class="analytics-kpi-sub">' + completed + ' of ' + started + ' started</div>' +
+        '</div>' +
+        '<div class="analytics-kpi">' +
+          '<div class="analytics-kpi-num' + urgentClass + '">' + urgent + '</div>' +
+          '<div class="analytics-kpi-label">Urgent screen shown</div>' +
+          '<div class="analytics-kpi-sub">safety trigger fired</div>' +
+        '</div>' +
+      '</div>';
+
+    // ── Stage distribution ─────────────────────────────────────────
+    var totalDist = Object.values(dist).reduce(function(a, b) { return a + Number(b); }, 0);
+    var distRows = "";
+    for (var i = 1; i <= 6; i++) {
+      var count = Number(dist[String(i)] || 0);
+      var pct   = totalDist > 0 ? Math.round((count / totalDist) * 100) : 0;
+      var width = totalDist > 0 ? Math.max((count / totalDist) * 100, count > 0 ? 2 : 0) : 0;
+      distRows +=
+        '<div class="dist-row">' +
+          '<div class="dist-row-label">Stage ' + i + ' &mdash; ' + STAGE_TITLES[i-1] + '</div>' +
+          '<div class="dist-bar-track">' +
+            '<div class="dist-bar-fill" style="width:' + width.toFixed(1) + '%;background:' + STAGE_COLORS[i-1] + ';"></div>' +
+          '</div>' +
+          '<div class="dist-row-count">' + count + ' <span style="color:#cbd5e1;">(' + pct + '%)</span></div>' +
+        '</div>';
+    }
+
+    var distSection =
+      '<div>' +
+        '<p class="analytics-panel-title">Stage distribution &mdash; ' + totalDist + ' completed check' + (totalDist !== 1 ? 's' : '') + '</p>' +
+        (totalDist > 0 ? '<div class="dist-rows">' + distRows + '</div>' :
+          '<p style="font-size:13px;color:#94a3b8;">No completed checks yet.</p>') +
+      '</div>';
+
+    // ── Feedback ───────────────────────────────────────────────────
+    var totalFeed = feedYes + feedNo;
+    var posRate   = totalFeed > 0 ? Math.round((feedYes / totalFeed) * 100) : null;
+    var maxFeed   = Math.max(feedYes, feedNo, 1);
+
+    var feedSection =
+      '<div>' +
+        '<p class="analytics-panel-title">Feedback &mdash; ' + totalFeed + ' response' + (totalFeed !== 1 ? 's' : '') + '</p>' +
+        (totalFeed > 0 ?
+          '<div class="feedback-bars">' +
+            '<div class="feedback-bar-row">' +
+              '<div class="feedback-bar-label yes">Yes</div>' +
+              '<div class="feedback-bar-track"><div class="feedback-bar-fill-yes" style="width:' + Math.max((feedYes/maxFeed)*100, feedYes>0?3:0).toFixed(1) + '%;"></div></div>' +
+              '<div class="feedback-bar-count">' + feedYes + '</div>' +
+            '</div>' +
+            '<div class="feedback-bar-row">' +
+              '<div class="feedback-bar-label no">No</div>' +
+              '<div class="feedback-bar-track"><div class="feedback-bar-fill-no" style="width:' + Math.max((feedNo/maxFeed)*100, feedNo>0?3:0).toFixed(1) + '%;"></div></div>' +
+              '<div class="feedback-bar-count">' + feedNo + '</div>' +
+            '</div>' +
+          '</div>' +
+          (posRate !== null ?
+            '<p class="feedback-pos-rate">' + posRate + '% positive' +
+              '<span> &nbsp;&mdash;&nbsp; ' + feedYes + ' helpful, ' + feedNo + ' not helpful</span>' +
+            '</p>' : ''
+          ) :
+          '<p style="font-size:13px;color:#94a3b8;">No feedback recorded yet.</p>'
+        ) +
+      '</div>';
+
+    // ── Check-in history ───────────────────────────────────────────
+    var histSection = "";
+    if (history.length > 0) {
+      var rows = history.slice().reverse().map(function(h) {
+        var dateStr = "—";
+        try { dateStr = new Date(h.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }); } catch(e) {}
+        var stageNum = h.stageNum || 1;
+        var color = STAGE_COLORS[(stageNum - 1)] || "#64748b";
+        return '<tr>' +
+          '<td class="history-date">' + dateStr + '</td>' +
+          '<td><span class="history-stage-badge" style="background:' + color + ';">Stage ' + stageNum + '</span></td>' +
+          '<td style="font-size:13px;color:#334155;">' + (h.stageTitle || "&mdash;") + '</td>' +
+          '<td>' + (h.urgentShown ?
+            '<span class="history-urgent">&#9888; Urgent shown</span>' :
+            '<span style="color:#94a3b8;font-size:12px;">&mdash;</span>') +
+          '</td>' +
+        '</tr>';
+      }).join("");
+
+      histSection =
+        '<div>' +
+          '<p class="analytics-panel-title">Check-in history on this device &mdash; last ' + history.length + ' check' + (history.length !== 1 ? 's' : '') + '</p>' +
+          '<div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0;">' +
+            '<table class="history-tbl">' +
+              '<thead><tr><th>Date</th><th>Stage</th><th>Stage title</th><th>Alert</th></tr></thead>' +
+              '<tbody>' + rows + '</tbody>' +
+            '</table>' +
+          '</div>' +
+        '</div>';
+    }
+
+    // ── Data scope notice ──────────────────────────────────────────
+    var scopeNotice =
+      '<div class="data-scope-notice">' +
+        '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink:0;margin-top:1px" aria-hidden="true">' +
+          '<path d="M9 6v4M9 13h.01" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>' +
+          '<path d="M1.5 9a7.5 7.5 0 1 0 15 0 7.5 7.5 0 0 0-15 0z" stroke="currentColor" stroke-width="2"/>' +
+        '</svg>' +
+        '<div>' +
+          '<strong>This data is from this browser only.</strong> ' +
+          'localStorage is scoped to a single browser on a single device — it is never transmitted or shared.' +
+          '<ul>' +
+            '<li>Each device accumulates its own separate data; there is no cross-device aggregation</li>' +
+            '<li>If a user clears their browser storage, their counts reset to zero</li>' +
+            '<li>To aggregate usage across all users, a server-side analytics service is needed (requires charity sign-off and privacy policy update)</li>' +
+          '</ul>' +
+        '</div>' +
+      '</div>';
+
+    // ── Assemble ───────────────────────────────────────────────────
+    dash.innerHTML =
+      statusBar +
+      kpis +
+      '<div class="analytics-panels">' +
+        distSection +
+        feedSection +
+        histSection +
+        scopeNotice +
+      '</div>';
+  }
+
+  /* ── Analytics lock screen ─────────────────────────────────────── */
+
+  function _renderAnalyticsLock() {
+    var dash = document.getElementById("analytics-dash");
+    if (!dash) return;
+    dash.innerHTML =
+      '<div class="analytics-lock">' +
+        '<div class="analytics-lock-icon">&#128274;</div>' +
+        '<p class="analytics-lock-title">Analytics access</p>' +
+        '<p class="analytics-lock-desc">' +
+          'Enter the Insights passphrase to view usage data on this device. ' +
+          'This is the same passphrase used for <code>/?mode=insights</code> in the main tool.' +
+        '</p>' +
+        '<div class="analytics-lock-form">' +
+          '<input type="password" class="analytics-lock-input" id="analytics-pass-input"' +
+            ' placeholder="Passphrase" autocomplete="off"' +
+            ' onkeydown="_handleLockKeydown(event)">' +
+          '<button class="analytics-lock-btn" onclick="unlockAnalytics()">Unlock</button>' +
+        '</div>' +
+        '<p class="analytics-lock-error" id="analytics-lock-error">Incorrect passphrase — try again.</p>' +
+        '<p class="analytics-lock-hint">Same passphrase as the Insights screen in the main tool</p>' +
+      '</div>';
+    var inp = document.getElementById("analytics-pass-input");
+    if (inp) inp.focus();
+  }
+
+  function _handleLockKeydown(e) {
+    if (e.key === "Enter") unlockAnalytics();
+  }
+
+  function unlockAnalytics() {
+    var inp = document.getElementById("analytics-pass-input");
+    if (!inp) return;
+    var val = inp.value.trim();
+    if (val === _analyticsPass()) {
+      try { sessionStorage.setItem(ANALYTICS_SESSION_KEY, "1"); } catch(e) {}
+      renderAnalyticsDash();
+    } else {
+      var err = document.getElementById("analytics-lock-error");
+      if (err) err.style.display = "block";
+      inp.value = "";
+      inp.focus();
+    }
+  }
+
+  /* ── Reset analytics data ───────────────────────────────────────── */
+
+  function resetAnalyticsData() {
+    var ok = window.confirm(
+      "Clear all anonymous usage data from this device?\n\n" +
+      "This will remove:\n" +
+      "  • mcsc_stats   — usage counts and stage distribution\n" +
+      "  • mcsc_feedback — helpful / not helpful responses\n" +
+      "  • mcsc_history  — last 5 check-in records\n\n" +
+      "This cannot be undone."
+    );
+    if (!ok) return;
+    try {
+      localStorage.removeItem("mcsc_stats");
+      localStorage.removeItem("mcsc_feedback");
+      localStorage.removeItem("mcsc_history");
+    } catch(e) {}
+    renderAnalyticsDash();
+  }
+
+  /* ── Export aggregate summary (plain text, clipboard) ───────────── */
+
+  function _padR(str, len) {
+    str = String(str);
+    while (str.length < len) str += " ";
+    return str;
+  }
+
+  function exportAnalyticsSummary() {
+    var stats = {}, feedback = [], history = [];
+    try { stats    = JSON.parse(localStorage.getItem("mcsc_stats"))   || {}; } catch(e) {}
+    try { feedback = JSON.parse(localStorage.getItem("mcsc_feedback")) || []; } catch(e) {}
+
+    var started   = stats.checksStarted  || 0;
+    var completed = stats.checksCompleted || 0;
+    var urgent    = stats.urgentShown    || 0;
+    var feedYes   = stats.feedbackYes    || 0;
+    var feedNo    = stats.feedbackNo     || 0;
+    var dist      = stats.stageDistribution || {};
+    var totalDist = Object.keys(dist).reduce(function(a, k) { return a + Number(dist[k]); }, 0);
+    var completionRate = started > 0 ? Math.round((completed / started) * 100) : 0;
+    var totalFeed = feedYes + feedNo;
+    var posRate   = totalFeed > 0 ? Math.round((feedYes / totalFeed) * 100) : null;
+
+    var dateStr = new Date().toLocaleString("en-GB", {
+      weekday: "short", day: "numeric", month: "long", year: "numeric",
+      hour: "2-digit", minute: "2-digit", second: "2-digit"
+    });
+
+    var L = 24;  // label column width for overview
+    var LS = 42; // label column width for stage distribution
+
+    var lines = [
+      "CareStage — Anonymous Aggregate Summary",
+      "==========================================",
+      _padR("Exported:", L)  + dateStr,
+      _padR("Source:", L)    + "localStorage (this device only)",
+      "",
+      "OVERVIEW",
+      "--------",
+      _padR("Checks started:", L)      + started,
+      _padR("Checks completed:", L)    + completed,
+      _padR("Completion rate:", L)     + completionRate + "%",
+      _padR("Urgent screen shown:", L) + urgent,
+      "",
+      "STAGE DISTRIBUTION",
+      "------------------",
+    ];
+
+    for (var i = 1; i <= 6; i++) {
+      var count = Number(dist[String(i)] || 0);
+      var pct   = totalDist > 0 ? Math.round((count / totalDist) * 100) : 0;
+      lines.push(_padR("Stage " + i + " — " + STAGE_TITLES[i-1] + ":", LS) + count + " (" + pct + "%)");
+    }
+    lines.push(_padR("Total:", LS) + totalDist);
+
+    lines.push(
+      "",
+      "FEEDBACK",
+      "--------",
+      _padR("Helpful (Yes):", L)    + feedYes,
+      _padR("Not helpful (No):", L) + feedNo,
+      _padR("Total responses:", L)  + totalFeed,
+      _padR("Positive rate:", L)    + (posRate !== null ? posRate + "%" : "n/a"),
+      "",
+      "DATA SCOPE",
+      "----------",
+      "This data is from a single device only. localStorage is scoped to one",
+      "browser — it cannot be aggregated across users or devices.",
+      "No personal data, identifiers, or IP addresses are included.",
+      "This export contains anonymous aggregate totals only."
+    );
+
+    var text = lines.join("\n");
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        _showExportFeedback("&#10003; Copied to clipboard");
+      }).catch(function() {
+        _fallbackCopyText(text);
+      });
+    } else {
+      _fallbackCopyText(text);
+    }
+  }
+
+  function _fallbackCopyText(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none;";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch(e) {}
+    document.body.removeChild(ta);
+    if (ok) {
+      _showExportFeedback("&#10003; Copied to clipboard");
+    } else {
+      _showExportFeedback("&#9888; Copy failed — see console");
+      console.log("[Analytics Export]\n" + text);
+    }
+  }
+
+  function _showExportFeedback(msg) {
+    var btn = document.getElementById("analytics-export-btn");
+    if (!btn) return;
+    var orig = btn.innerHTML;
+    btn.innerHTML = msg;
+    btn.disabled = true;
+    setTimeout(function() { btn.innerHTML = orig; btn.disabled = false; }, 2200);
+  }
+
   // Active nav highlight via IntersectionObserver
   document.addEventListener("DOMContentLoaded", function() {
     simUpdate();
+    renderAnalyticsDash();
     const navLinks = document.querySelectorAll(".nav-links a");
     const sectionIds = Array.from(navLinks).map(function(a) {
       return a.getAttribute("href").replace("#", "");

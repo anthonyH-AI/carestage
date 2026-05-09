@@ -2071,7 +2071,7 @@
     /* Stage 8: print — hide conv/feedback/insights controls */
     @media print {
       .conv-mode-row, .conv-mode-intro, .feedback-section,
-      .conv-result-footer, .landing-meta-links, .about-overlay { display: none !important; }
+      .conv-result-footer, .landing-meta-links, .about-overlay, #a11y-overlay { display: none !important; }
       .conv-prompts-section { display: block !important; }
       .conv-mode-banner { display: block !important; border: 1px solid #ccc !important; background: #fff !important; }
     }
@@ -2196,6 +2196,15 @@
       .progression-text { color: #333 !important; }
       .progression-reassurance { color: #444 !important; }
 
+      /* Weekly pathway — show in print, expand <details>, strip colour */
+      #weekly-pathway-result-section[hidden] { display: none !important; }
+      #weekly-pathway-result-section:not([hidden]) { display: block !important; }
+      #weekly-pathway-details { background: #fff !important; border: 1px solid #ccc !important; }
+      .pathway-bucket { border-left-color: #aaa !important; }
+      .pathway-bucket-label { color: #333 !important; }
+      .pathway-item-text { color: #111 !important; }
+      .pathway-item-hint { color: #555 !important; }
+
       .result-stage-label {
         border: 1px solid #333 !important;
         background: none !important;
@@ -2248,6 +2257,7 @@
       body.printing-roadmap .screen,
       body.printing-roadmap .help-now-bar,
       body.printing-roadmap .about-overlay,
+      body.printing-roadmap #a11y-overlay,
       body.printing-roadmap #global-error-banner,
       body.printing-roadmap #offline-banner {
         display: none !important;
@@ -2261,6 +2271,24 @@
       /* Strip backgrounds in roadmap print */
       .roadmap-bridgit-section { background: #fff !important; }
       .roadmap-review-note { background: #fff !important; }
+
+      /* ── Contingency planner print mode ──────────── */
+      body.printing-contingency #screen-result { display: none !important; }
+      body.printing-contingency #screen-contingency {
+        display: block !important; padding: 0 !important;
+      }
+      body.printing-contingency .cp-save-bar,
+      body.printing-contingency .screen-nav,
+      body.printing-contingency .contingency-entry-card { display: none !important; }
+      body.printing-contingency .cp-print-header { display: block !important; }
+      /* Hide empty section cards on print */
+      body.printing-contingency .contingency-section-card.cp-section-empty { display: none !important; }
+      .contingency-section-card { break-inside: avoid; border: 1px solid #ccc !important; }
+      .contingency-prompt-input {
+        border: 1px solid #ccc !important; background: #fff !important;
+        min-height: 60px !important; resize: none !important;
+      }
+      .contingency-notice, .contingency-disclaimer { break-inside: avoid; }
     }
 
     /* ── Help Now Bar (fixed bottom, hidden during question flow) ─ */
@@ -2966,6 +2994,373 @@
     }
     .action-plan-copy-success[hidden] { display: none; }
     .action-plan-copy-success.fade-out { opacity: 0; }
+
+    /* ══════════════════════════════════════════════════
+       ACCESSIBILITY SETTINGS PANEL — V2.5
+    ══════════════════════════════════════════════════ */
+
+    /* ── Panel overlay ──────────────────────────────── */
+    .a11y-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(15,23,42,0.55);
+      display: flex; align-items: flex-end;
+    }
+    @media (min-width: 560px) {
+      .a11y-overlay { align-items: center; justify-content: center; }
+    }
+    .a11y-panel {
+      background: #fff; width: 100%; max-width: 480px;
+      border-radius: 18px 18px 0 0;
+      max-height: 92vh; overflow-y: auto;
+      display: flex; flex-direction: column;
+    }
+    @media (min-width: 560px) {
+      .a11y-panel { border-radius: 18px; margin: 24px; }
+    }
+    .a11y-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      position: sticky; top: 0; background: #fff; z-index: 1;
+    }
+    .a11y-panel-title {
+      font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;
+    }
+    .a11y-close-btn {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      background: #f1f5f9; border: none; cursor: pointer;
+      font-size: 15px; display: flex; align-items: center; justify-content: center;
+      color: #475569; line-height: 1;
+    }
+    .a11y-close-btn:hover { background: #e2e8f0; color: #0f172a; }
+    .a11y-close-btn:focus-visible { outline: 2px solid #0f766e; outline-offset: 2px; }
+
+    .a11y-panel-body { padding: 4px 0 8px; }
+
+    /* ── Each setting row ───────────────────────────── */
+    .a11y-setting {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 20px; cursor: default;
+    }
+    .a11y-setting:hover { background: #f8fafc; }
+    .a11y-setting-text { flex: 1; min-width: 0; }
+    .a11y-setting-label {
+      display: block; font-size: 15px; font-weight: 600; color: #1e293b;
+      margin-bottom: 2px;
+    }
+    .a11y-setting-desc { font-size: 13px; color: #64748b; line-height: 1.4; }
+
+    /* ── Toggle switch ──────────────────────────────── */
+    .a11y-toggle {
+      width: 46px; height: 26px; border-radius: 13px;
+      background: #cbd5e1; border: 2px solid transparent;
+      cursor: pointer; flex-shrink: 0; position: relative;
+      padding: 0; transition: background 0.18s;
+    }
+    .a11y-toggle[aria-checked="true"] { background: #0f766e; }
+    .a11y-toggle:focus-visible { outline: 2px solid #0f766e; outline-offset: 3px; }
+    .a11y-toggle-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #fff; transition: transform 0.18s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+      pointer-events: none;
+    }
+    .a11y-toggle[aria-checked="true"] .a11y-toggle-thumb {
+      transform: translateX(20px);
+    }
+
+    /* ── Footer ─────────────────────────────────────── */
+    .a11y-panel-footer {
+      padding: 14px 20px 16px;
+      border-top: 1px solid #e2e8f0;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+      position: sticky; bottom: 0; background: #fff; z-index: 1;
+    }
+    .a11y-privacy-note {
+      font-size: 12px; color: #64748b;
+      display: flex; align-items: center; gap: 5px; margin: 0;
+    }
+
+    /* ── Body-class CSS overrides ───────────────────── */
+
+    /* Larger text */
+    body.a11y-large-text p,
+    body.a11y-large-text li,
+    body.a11y-large-text .landing-intro,
+    body.a11y-large-text .result-meaning,
+    body.a11y-large-text .info-section p,
+    body.a11y-large-text .info-section li,
+    body.a11y-large-text .stage-card-meaning,
+    body.a11y-large-text .contingency-section-intro,
+    body.a11y-large-text .contingency-prompt-label,
+    body.a11y-large-text .v2-body p,
+    body.a11y-large-text .card p { font-size: 17px !important; line-height: 1.85 !important; }
+    body.a11y-large-text .result-stage-title,
+    body.a11y-large-text h2 { font-size: clamp(22px, 4vw, 28px) !important; }
+    body.a11y-large-text h3,
+    body.a11y-large-text .card h3,
+    body.a11y-large-text .a11y-setting-label { font-size: 17px !important; }
+    body.a11y-large-text .btn,
+    body.a11y-large-text .btn-primary,
+    body.a11y-large-text .btn-secondary,
+    body.a11y-large-text .btn-outline { font-size: 16px !important; }
+    body.a11y-large-text .contingency-prompt-input,
+    body.a11y-large-text .sim-q select { font-size: 16px !important; }
+
+    /* Extra spacing */
+    body.a11y-extra-spacing .container { padding-top: 32px !important; padding-bottom: 40px !important; }
+    body.a11y-extra-spacing p { margin-bottom: 14px !important; }
+    body.a11y-extra-spacing .result-section { margin-bottom: 32px !important; }
+    body.a11y-extra-spacing .result-step { padding: 16px 20px !important; }
+    body.a11y-extra-spacing .contingency-section-body { gap: 20px !important; }
+    body.a11y-extra-spacing .contingency-section-header { padding: 18px 20px 14px !important; }
+    body.a11y-extra-spacing .btn,
+    body.a11y-extra-spacing .btn-primary,
+    body.a11y-extra-spacing .btn-secondary,
+    body.a11y-extra-spacing .btn-outline { padding: 14px 24px !important; min-height: 50px !important; }
+    body.a11y-extra-spacing .action-card { padding: 16px 18px !important; }
+    body.a11y-extra-spacing .landing-meta-links { gap: 12px !important; }
+
+    /* Simplified view */
+    body.a11y-simplified * { box-shadow: none !important; text-shadow: none !important; }
+    body.a11y-simplified .hero { background: #f0fdf4 !important; color: #0f172a !important; }
+    body.a11y-simplified .hero h1,
+    body.a11y-simplified .hero p { color: #0f172a !important; opacity: 1 !important; }
+    body.a11y-simplified .btn-white { background: #0f766e !important; color: #fff !important; }
+    body.a11y-simplified .btn-outline-white {
+      background: transparent !important; color: #0f766e !important;
+      border-color: #0f766e !important;
+    }
+    body.a11y-simplified .result-tip-card,
+    body.a11y-simplified .support-banner,
+    body.a11y-simplified .history-banner { background: #f8fafc !important; }
+    body.a11y-simplified .stage-card-header { background: #f8fafc !important; }
+
+    /* Reduced motion */
+    body.a11y-reduced-motion *,
+    body.a11y-reduced-motion *::before,
+    body.a11y-reduced-motion *::after {
+      transition-duration: 0ms !important;
+      animation-duration: 0ms !important;
+      animation-delay: 0ms !important;
+    }
+
+    /* High contrast */
+    body.a11y-high-contrast { background: #fff !important; }
+    body.a11y-high-contrast p,
+    body.a11y-high-contrast li,
+    body.a11y-high-contrast .landing-intro,
+    body.a11y-high-contrast .result-meaning,
+    body.a11y-high-contrast .info-section p,
+    body.a11y-high-contrast .stage-card-meaning { color: #0f172a !important; }
+    body.a11y-high-contrast .result-section-label,
+    body.a11y-high-contrast .section-label,
+    body.a11y-high-contrast .q-label { color: #0f4c75 !important; }
+    body.a11y-high-contrast .contingency-prompt-hint,
+    body.a11y-high-contrast .a11y-setting-desc,
+    body.a11y-high-contrast .flow-step-desc,
+    body.a11y-high-contrast .stat-label,
+    body.a11y-high-contrast .stage-card-score,
+    body.a11y-high-contrast .stage-card-review { color: #334155 !important; }
+    body.a11y-high-contrast .card,
+    body.a11y-high-contrast .result-step,
+    body.a11y-high-contrast .contingency-section-card,
+    body.a11y-high-contrast .contingency-entry-card { border: 2px solid #475569 !important; }
+    body.a11y-high-contrast .btn-outline { border-width: 2px !important; }
+    body.a11y-high-contrast .btn-secondary { border: 2px solid #334155 !important; color: #0f172a !important; }
+    body.a11y-high-contrast .contingency-prompt-input,
+    body.a11y-high-contrast select { border: 2px solid #475569 !important; }
+    body.a11y-high-contrast .landing-meta-links .btn-text-link,
+    body.a11y-high-contrast .btn-text-link { color: #0f4c75 !important; }
+
+    /* Dyslexia-friendly font */
+    body.a11y-dyslexia-friendly,
+    body.a11y-dyslexia-friendly * {
+      font-family: Arial, Verdana, Tahoma, sans-serif !important;
+    }
+    body.a11y-dyslexia-friendly p,
+    body.a11y-dyslexia-friendly li,
+    body.a11y-dyslexia-friendly label,
+    body.a11y-dyslexia-friendly .landing-intro,
+    body.a11y-dyslexia-friendly .result-meaning,
+    body.a11y-dyslexia-friendly .contingency-prompt-input,
+    body.a11y-dyslexia-friendly textarea,
+    body.a11y-dyslexia-friendly input {
+      letter-spacing: 0.03em !important;
+      word-spacing: 0.1em !important;
+    }
+
+    /* ── Respect OS-level prefers-reduced-motion ─────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+
+    /* ══════════════════════════════════════════════════
+       WEEKLY PATHWAY — V2.5 Feature 3
+    ══════════════════════════════════════════════════ */
+
+    .weekly-pathway-section {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 14px; margin-bottom: 20px;
+    }
+    .weekly-pathway-section > summary {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; padding: 14px 18px; cursor: pointer;
+      font-size: 14px; font-weight: 700; color: #0f172a;
+      list-style: none; user-select: none; border-radius: 14px;
+    }
+    .weekly-pathway-section > summary::-webkit-details-marker { display: none; }
+    .weekly-pathway-section > summary .wp-summary-left {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .weekly-pathway-section > summary .wp-icon { font-size: 17px; line-height: 1; }
+    .weekly-pathway-section > summary .wp-chevron {
+      flex-shrink: 0; color: #64748b;
+      transition: transform 0.22s ease;
+    }
+    .weekly-pathway-section[open] > summary .wp-chevron { transform: rotate(180deg); }
+    .weekly-pathway-section > summary:focus-visible { outline: 3px solid #2dd4bf; outline-offset: 2px; }
+
+    .weekly-pathway-body { padding: 4px 18px 18px; }
+    .weekly-pathway-intro {
+      font-size: 13px; color: #64748b; line-height: 1.6;
+      margin-bottom: 18px; padding-top: 2px;
+    }
+
+    .pathway-bucket {
+      border-left: 3px solid #e2e8f0;
+      padding-left: 14px; margin-bottom: 20px;
+    }
+    .pathway-bucket:last-child { margin-bottom: 0; }
+    .pathway-bucket.bucket-today     { border-left-color: #0d9488; }
+    .pathway-bucket.bucket-next-days { border-left-color: #3b82f6; }
+    .pathway-bucket.bucket-this-week { border-left-color: #8b5cf6; }
+    .pathway-bucket.bucket-when-ready{ border-left-color: #94a3b8; }
+
+    .pathway-bucket-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; margin-bottom: 10px;
+    }
+    .bucket-today      .pathway-bucket-label { color: #0d9488; }
+    .bucket-next-days  .pathway-bucket-label { color: #3b82f6; }
+    .bucket-this-week  .pathway-bucket-label { color: #8b5cf6; }
+    .bucket-when-ready .pathway-bucket-label { color: #64748b; }
+
+    .pathway-items { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+    .pathway-item { }
+    .pathway-item-text {
+      font-size: 14px; color: #1e293b; line-height: 1.55; font-weight: 500;
+    }
+    .pathway-item-hint {
+      font-size: 13px; color: #64748b; line-height: 1.5; margin-top: 3px;
+    }
+
+    /* Accessibility overrides */
+    body.a11y-large-text .pathway-item-text  { font-size: 16px !important; }
+    body.a11y-large-text .pathway-item-hint  { font-size: 15px !important; }
+    body.a11y-large-text .weekly-pathway-intro { font-size: 15px !important; }
+    body.a11y-simplified .weekly-pathway-section { background: #fff !important; }
+    body.a11y-high-contrast .weekly-pathway-section { border: 2px solid #475569 !important; }
+    body.a11y-high-contrast .pathway-bucket { border-left-width: 4px !important; }
+
+    /* Print: expand section, strip chrome */
+    @media print {
+      .weekly-pathway-section,
+      .weekly-pathway-section[open] { display: block !important; }
+      .weekly-pathway-section > summary .wp-chevron { display: none !important; }
+      .weekly-pathway-section { background: #fff !important; border: 1px solid #ccc !important; }
+    }
+
+    /* ══════════════════════════════════════════════════
+       CONTINGENCY PLANNER — V2.5
+    ══════════════════════════════════════════════════ */
+
+    /* ── Result-page entry card ─────────────────────── */
+    .contingency-entry-card {
+      display: flex; align-items: center; gap: 14px;
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 16px;
+    }
+    .contingency-entry-icon { font-size: 22px; flex-shrink: 0; line-height: 1; }
+    .contingency-entry-body { flex: 1; min-width: 0; }
+    .contingency-entry-body h3 {
+      font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 3px;
+    }
+    .contingency-entry-body p {
+      font-size: 13px; color: #64748b; line-height: 1.5; margin: 0;
+    }
+
+    /* ── Contingency screen ─────────────────────────── */
+    .contingency-notice {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;
+      padding: 12px 16px; margin-bottom: 16px;
+      font-size: 13px; color: #14532d; line-height: 1.5;
+    }
+    .contingency-notice p { margin: 0; }
+    .contingency-notice-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+    .contingency-disclaimer {
+      background: #fef9c3; border: 1px solid #fde68a; border-radius: 8px;
+      padding: 10px 14px; margin-bottom: 20px;
+      font-size: 12px; color: #713f12; line-height: 1.5;
+    }
+    .contingency-section-card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+      margin-bottom: 14px; overflow: hidden;
+    }
+    .contingency-section-header {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 16px 18px 10px;
+    }
+    .contingency-section-icon {
+      font-size: 20px; flex-shrink: 0; line-height: 1; margin-top: 3px;
+    }
+    .contingency-section-title {
+      font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 4px;
+    }
+    .contingency-section-intro {
+      font-size: 13px; color: #475569; line-height: 1.55; margin: 0;
+    }
+    .contingency-section-body {
+      padding: 4px 18px 18px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .contingency-prompt-label {
+      display: block; font-size: 13px; font-weight: 600; color: #1e293b;
+      margin-bottom: 4px;
+    }
+    .contingency-prompt-hint {
+      font-size: 12px; color: #94a3b8; margin-bottom: 6px; line-height: 1.4;
+    }
+    .contingency-prompt-input {
+      width: 100%; padding: 9px 12px;
+      border: 1px solid #cbd5e1; border-radius: 8px;
+      font-size: 14px; color: #1e293b; line-height: 1.5;
+      font-family: inherit; resize: vertical; min-height: 40px;
+      background: #fff; transition: border-color 0.15s; display: block;
+    }
+    .contingency-prompt-input:focus {
+      outline: 2px solid #0f766e; outline-offset: 0; border-color: transparent;
+    }
+
+    /* ── Save bar ───────────────────────────────────── */
+    .cp-save-bar {
+      position: sticky; bottom: 0;
+      background: #fff; border-top: 1px solid #e2e8f0;
+      padding: 12px 20px; display: flex; align-items: center;
+      gap: 10px; z-index: 10; flex-wrap: wrap; margin-top: 8px;
+    }
+    .cp-save-status { font-size: 13px; flex: 1; min-width: 80px; }
+    .cp-save-status.saved  { color: #0f766e; }
+    .cp-save-status.saving { color: #94a3b8; }
+    .cp-save-status.empty  { color: #94a3b8; }
+    .cp-print-header { display: none; }
   </style>
 </head>
 <body>
@@ -3096,9 +3491,13 @@
         <span class="sep" aria-hidden="true">·</span>
         <button class="btn-text-link" onclick="showAccessibility()" aria-label="Read the accessibility statement for this tool">Accessibility</button>
         <span class="sep" aria-hidden="true">·</span>
+        <button class="btn-text-link" onclick="openAccessibilitySettings()" aria-label="Open display and reading options">Display options</button>
+        <span class="sep" aria-hidden="true">·</span>
         <button class="btn-text-link" onclick="showSafeguarding()" aria-label="Read the safeguarding and service boundary statement">Safeguarding</button>
         <span class="sep" aria-hidden="true">·</span>
         <button class="btn-text-link" onclick="showGovernance()" aria-label="View governance information for organisations using this tool">For organisations</button>
+        <span class="sep" aria-hidden="true">·</span>
+        <button class="btn-text-link" onclick="showContingencyPlanner()" aria-label="Open the contingency planning tool">Plan ahead</button>
         <!-- Give feedback link — shown only when BRANDING.feedbackUrl is set -->
         <span class="sep" id="feedback-link-sep" aria-hidden="true" hidden>·</span>
         <a id="feedback-link" class="btn-text-link" href="#" target="_blank" rel="noopener noreferrer" aria-label="Give feedback about this tool (opens external link)" hidden>Give feedback</a>
@@ -3436,6 +3835,24 @@
         <!-- filled by renderProgressionGuidance() -->
       </div>
 
+      <!-- Ideas for this week — weekly pathway (V2.5 Feature 3) -->
+      <div class="result-section" id="weekly-pathway-result-section" hidden>
+        <details class="weekly-pathway-section" id="weekly-pathway-details">
+          <summary>
+            <span class="wp-summary-left">
+              <span class="wp-icon" aria-hidden="true">📅</span>
+              <span>Ideas for this week</span>
+            </span>
+            <svg class="wp-chevron" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <path d="M4 6l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </summary>
+          <div class="weekly-pathway-body" id="weekly-pathway-body">
+            <!-- populated by renderWeeklyPathway() -->
+          </div>
+        </details>
+      </div>
+
       <!-- Learn more expandable -->
       <details class="learn-more-section" id="learn-more-section">
         <summary class="learn-more-toggle" aria-label="Learn more about this stage">
@@ -3614,6 +4031,18 @@
       <!-- Conversation mode footer (Stage 8) — shown when conv mode on -->
       <div class="conv-result-footer" id="conv-result-footer" hidden role="note">
         This result can support a conversation but does not replace professional advice.
+      </div>
+
+      <!-- Contingency planner entry (V2.5) -->
+      <div class="contingency-entry-card" id="contingency-entry-card">
+        <span class="contingency-entry-icon" aria-hidden="true">📋</span>
+        <div class="contingency-entry-body">
+          <h3>If you suddenly needed help</h3>
+          <p>Note who could step in and what they would need to know.</p>
+        </div>
+        <button class="btn-secondary" onclick="showContingencyPlanner()" aria-label="Open the contingency planner">
+          Open planner
+        </button>
       </div>
 
       <!-- Feedback (Stage 8) -->
@@ -3834,6 +4263,8 @@
   <script src="src/content/progressionGuidance.js"></script>
   <script src="src/content/serviceSuggestions.js"></script>
   <script src="src/content/conversationPrompts.js"></script>
+  <script src="src/content/contingencyPrompts.js"></script>
+  <script src="src/content/weeklyPathways.js"></script>
   <script src="src/content/stageResults.js"></script>
   <script src="src/content/resources.js"></script>
   <script src="src/content/actionPlans.js"></script>
@@ -4397,6 +4828,9 @@
 
       // Progression guidance (V2 Stage 7)
       renderProgressionGuidance(result.stage);
+
+      // Weekly pathway (V2.5 Feature 3)
+      renderWeeklyPathway(result.stage);
 
       // Action plan (from action-plans.js)
       renderActionPlan(result.stage);
@@ -5051,6 +5485,68 @@
         '</div>';
 
       section.removeAttribute('hidden');
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       WEEKLY PATHWAY — V2.5 Feature 3
+    ══════════════════════════════════════════════════════════ */
+
+    /* Renders (or hides) the weekly-pathway-result-section on the result page.
+       Uses WEEKLY_PATHWAYS['stage' + N] from weeklyPathways.js. */
+    function renderWeeklyPathway(stage) {
+      var outerSection = document.getElementById('weekly-pathway-result-section');
+      var body         = document.getElementById('weekly-pathway-body');
+      if (!outerSection || !body) return;
+
+      if (typeof WEEKLY_PATHWAYS === 'undefined') {
+        outerSection.setAttribute('hidden', '');
+        return;
+      }
+
+      var key  = 'stage' + stage;
+      var data = WEEKLY_PATHWAYS[key];
+      if (!data) {
+        outerSection.setAttribute('hidden', '');
+        return;
+      }
+
+      var buckets = [
+        { id: 'today',      label: 'Today',             cssClass: 'bucket-today',      items: data.today },
+        { id: 'nextFewDays',label: 'In the next few days', cssClass: 'bucket-next-days', items: data.nextFewDays },
+        { id: 'thisWeek',   label: 'This week',          cssClass: 'bucket-this-week',  items: data.thisWeek },
+        { id: 'whenReady',  label: 'When you feel ready',cssClass: 'bucket-when-ready', items: data.whenReady },
+      ];
+
+      function _buildItems(items) {
+        if (!items || !items.length) return '';
+        return items.map(function(item) {
+          var hintHtml = item.hint
+            ? '<p class="pathway-item-hint">' + item.hint + '</p>'
+            : '';
+          return '<li class="pathway-item">' +
+            '<p class="pathway-item-text">' + item.text + '</p>' +
+            hintHtml +
+            '</li>';
+        }).join('');
+      }
+
+      var introHtml = data.intro
+        ? '<p class="weekly-pathway-intro">' + data.intro + '</p>'
+        : '';
+
+      var bucketsHtml = buckets.map(function(b) {
+        if (!b.items || !b.items.length) return '';
+        return '<div class="pathway-bucket ' + b.cssClass + '">' +
+          '<p class="pathway-bucket-label">' + b.label + '</p>' +
+          '<ul class="pathway-items" aria-label="' + b.label + ' — ideas for carers at stage ' + stage + '">' +
+            _buildItems(b.items) +
+          '</ul>' +
+          '</div>';
+      }).join('');
+
+      body.innerHTML = introHtml + bucketsHtml;
+      outerSection.removeAttribute('hidden');
+      logEvent('weekly_pathway_rendered', { stage: stage });
     }
 
     /* ══════════════════════════════════════════════════════════
@@ -5960,6 +6456,132 @@
     function closeAccessibility() { showScreen('screen-landing'); }
 
     /* ══════════════════════════════════════════════════
+       V2.5 — ACCESSIBILITY SETTINGS PANEL
+    ══════════════════════════════════════════════════ */
+
+    const A11Y_KEY = 'mcsc_accessibility_settings';
+    const A11Y_DEFAULTS = {
+      largeText:        false,
+      extraSpacing:     false,
+      simplifiedView:   false,
+      reducedMotion:    false,
+      highContrast:     false,
+      dyslexiaFriendly: false,
+    };
+    let _a11ySettings = Object.assign({}, A11Y_DEFAULTS);
+    let _a11yTriggerEl = null; // element that opened the panel, to restore focus on close
+
+    function openAccessibilitySettings() {
+      _a11yTriggerEl = document.activeElement || null;
+      const overlay = document.getElementById('a11y-overlay');
+      overlay.removeAttribute('hidden');
+      // Sync toggle states to current settings
+      Object.keys(_a11ySettings).forEach(function(key) {
+        _a11yUpdateToggleUI(key, _a11ySettings[key]);
+      });
+      // Focus the close button
+      const closeBtn = document.getElementById('a11y-close-btn');
+      if (closeBtn) closeBtn.focus();
+      // Listen for Escape and focus-trap
+      overlay.addEventListener('keydown', _a11yKeyHandler);
+      logEvent('accessibility_settings_opened');
+    }
+
+    function closeAccessibilitySettings() {
+      const overlay = document.getElementById('a11y-overlay');
+      overlay.setAttribute('hidden', '');
+      overlay.removeEventListener('keydown', _a11yKeyHandler);
+      // Return focus to the element that triggered the panel
+      if (_a11yTriggerEl && typeof _a11yTriggerEl.focus === 'function') {
+        _a11yTriggerEl.focus();
+      }
+    }
+
+    function _a11yKeyHandler(e) {
+      if (e.key === 'Escape') {
+        closeAccessibilitySettings();
+        return;
+      }
+      // Focus trap: keep Tab inside the panel
+      if (e.key === 'Tab') {
+        const panel = document.querySelector('.a11y-panel');
+        const focusable = Array.from(
+          panel.querySelectorAll('button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+        );
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last  = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    function toggleA11ySetting(key) {
+      _a11ySettings[key] = !_a11ySettings[key];
+      _a11yUpdateToggleUI(key, _a11ySettings[key]);
+      applyAccessibilitySettings();
+      saveAccessibilitySettings();
+      logEvent('a11y_setting_changed', { key: key, value: _a11ySettings[key] });
+    }
+
+    function _a11yUpdateToggleUI(key, value) {
+      const btn = document.getElementById('a11y-toggle-' + key);
+      if (btn) btn.setAttribute('aria-checked', value ? 'true' : 'false');
+    }
+
+    function applyAccessibilitySettings() {
+      const map = {
+        largeText:        'a11y-large-text',
+        extraSpacing:     'a11y-extra-spacing',
+        simplifiedView:   'a11y-simplified',
+        reducedMotion:    'a11y-reduced-motion',
+        highContrast:     'a11y-high-contrast',
+        dyslexiaFriendly: 'a11y-dyslexia-friendly',
+      };
+      Object.keys(map).forEach(function(key) {
+        document.body.classList.toggle(map[key], !!_a11ySettings[key]);
+      });
+    }
+
+    function saveAccessibilitySettings() {
+      try {
+        localStorage.setItem(A11Y_KEY, JSON.stringify(_a11ySettings));
+      } catch (e) {
+        console.warn('[MCSC] Could not save accessibility settings:', e);
+      }
+    }
+
+    function loadAccessibilitySettings() {
+      try {
+        const raw = localStorage.getItem(A11Y_KEY);
+        if (raw) {
+          const saved = JSON.parse(raw);
+          // Merge with defaults so new keys always exist
+          _a11ySettings = Object.assign({}, A11Y_DEFAULTS, saved);
+        }
+      } catch (e) {
+        console.warn('[MCSC] Could not load accessibility settings:', e);
+        _a11ySettings = Object.assign({}, A11Y_DEFAULTS);
+      }
+      applyAccessibilitySettings();
+    }
+
+    function resetAccessibilitySettings() {
+      _a11ySettings = Object.assign({}, A11Y_DEFAULTS);
+      Object.keys(_a11ySettings).forEach(function(key) {
+        _a11yUpdateToggleUI(key, false);
+      });
+      applyAccessibilitySettings();
+      saveAccessibilitySettings();
+      logEvent('a11y_settings_reset');
+    }
+
+    /* ══════════════════════════════════════════════════
        STAGE 11 — PROFESSIONAL MODE
     ══════════════════════════════════════════════════ */
 
@@ -6327,6 +6949,182 @@
       logEvent('launch_checklist_viewed');
     }
     function closeLaunchChecklist() { showScreen('screen-landing'); }
+
+    /* ═══════════════════════════════════════════════════
+       CONTINGENCY PLANNER — V2.5
+       localStorage key: mcsc_contingency_plan
+       Structure: { lastSaved: ISO, sections: { [sectionId]: { [promptId]: string } } }
+       Content comes entirely from src/content/contingencyPrompts.js.
+       No analytics tracking of entered content — only an open event.
+    ════════════════════════════════════════════════════ */
+    const CP_KEY = 'mcsc_contingency_plan';
+    let _contingencyReturnScreen = 'screen-landing';
+    let _contingencyBuilt        = false;
+    let _cpSaveTimer             = null;
+
+    function showContingencyPlanner() {
+      const active = document.querySelector('.screen.active');
+      _contingencyReturnScreen = active ? active.id : 'screen-landing';
+      _buildContingencyPlannerIfNeeded();
+      _loadContingencyData();
+      showScreen('screen-contingency');
+      logEvent('contingency_planner_opened');
+    }
+
+    function closeContingencyPlanner() {
+      showScreen(_contingencyReturnScreen || 'screen-landing');
+    }
+
+    function _buildContingencyPlannerIfNeeded() {
+      if (_contingencyBuilt) return;
+      _contingencyBuilt = true;
+      if (typeof CONTINGENCY_PROMPTS === 'undefined') return;
+      const container = document.getElementById('cp-sections-container');
+      if (!container) return;
+
+      let html = '';
+      CONTINGENCY_PROMPTS.sections.forEach(function(section) {
+        html += '<div class="contingency-section-card" id="cp-section-' + section.id + '">' +
+          '<div class="contingency-section-header">' +
+          '<span class="contingency-section-icon" aria-hidden="true">' + section.icon + '</span>' +
+          '<div>' +
+          '<div class="contingency-section-title">' + section.title + '</div>' +
+          '<p class="contingency-section-intro">' + section.intro + '</p>' +
+          '</div></div>' +
+          '<div class="contingency-section-body">';
+
+        section.prompts.forEach(function(prompt) {
+          const inputId = 'cp-' + section.id + '-' + prompt.id;
+          html += '<div class="contingency-prompt">' +
+            '<label class="contingency-prompt-label" for="' + inputId + '">' + prompt.label + '</label>';
+          if (prompt.hint) {
+            html += '<div class="contingency-prompt-hint">' + prompt.hint + '</div>';
+          }
+          if (prompt.multiline) {
+            html += '<textarea class="contingency-prompt-input" id="' + inputId + '" rows="3" oninput="_cpAutoSave()" aria-label="' + prompt.label + '"></textarea>';
+          } else {
+            html += '<input type="text" class="contingency-prompt-input" id="' + inputId + '" oninput="_cpAutoSave()" aria-label="' + prompt.label + '" style="min-height:auto;">';
+          }
+          html += '</div>';
+        });
+
+        html += '</div></div>';
+      });
+      container.innerHTML = html;
+    }
+
+    function _cpAutoSave() {
+      clearTimeout(_cpSaveTimer);
+      _cpSetSaveStatus('saving');
+      _cpSaveTimer = setTimeout(function() {
+        _saveContingencyData();
+      }, 1200);
+    }
+
+    function _saveContingencyData() {
+      if (typeof CONTINGENCY_PROMPTS === 'undefined') return;
+      var data = { lastSaved: new Date().toISOString(), sections: {} };
+      CONTINGENCY_PROMPTS.sections.forEach(function(section) {
+        data.sections[section.id] = {};
+        section.prompts.forEach(function(prompt) {
+          var el = document.getElementById('cp-' + section.id + '-' + prompt.id);
+          if (el) data.sections[section.id][prompt.id] = el.value;
+        });
+      });
+      try { localStorage.setItem(CP_KEY, JSON.stringify(data)); } catch (_) {}
+      _cpSetSaveStatus('saved', data.lastSaved);
+    }
+
+    function _loadContingencyData() {
+      var raw;
+      try { raw = localStorage.getItem(CP_KEY); } catch (_) {}
+      if (!raw || typeof CONTINGENCY_PROMPTS === 'undefined') {
+        _cpSetSaveStatus('empty');
+        return;
+      }
+      var data;
+      try { data = JSON.parse(raw); } catch (_) { _cpSetSaveStatus('empty'); return; }
+      CONTINGENCY_PROMPTS.sections.forEach(function(section) {
+        var sd = (data.sections || {})[section.id] || {};
+        section.prompts.forEach(function(prompt) {
+          var el = document.getElementById('cp-' + section.id + '-' + prompt.id);
+          if (el && sd[prompt.id] !== undefined) el.value = sd[prompt.id];
+        });
+      });
+      _cpSetSaveStatus('saved', data.lastSaved);
+      // Populate print date element
+      var printDate = document.getElementById('cp-print-date');
+      if (printDate && data.lastSaved) {
+        printDate.textContent = 'Last saved: ' + new Date(data.lastSaved).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+    }
+
+    function _cpSetSaveStatus(status, isoDate) {
+      var el = document.getElementById('cp-save-status');
+      if (!el) return;
+      el.className = 'cp-save-status ' + status;
+      if (status === 'saving') {
+        el.textContent = 'Saving…';
+      } else if (status === 'saved') {
+        if (isoDate) {
+          var d = new Date(isoDate);
+          var hh = d.getHours().toString().padStart(2, '0');
+          var mm = d.getMinutes().toString().padStart(2, '0');
+          el.textContent = 'Saved at ' + hh + ':' + mm;
+        } else {
+          el.textContent = 'Saved ✓';
+        }
+      } else {
+        el.textContent = 'Not yet saved';
+      }
+    }
+
+    function clearContingencyPlan() {
+      if (!confirm('Clear all entries in your contingency plan? This cannot be undone.')) return;
+      try { localStorage.removeItem(CP_KEY); } catch (_) {}
+      if (typeof CONTINGENCY_PROMPTS !== 'undefined') {
+        CONTINGENCY_PROMPTS.sections.forEach(function(section) {
+          section.prompts.forEach(function(prompt) {
+            var el = document.getElementById('cp-' + section.id + '-' + prompt.id);
+            if (el) el.value = '';
+          });
+        });
+      }
+      _cpSetSaveStatus('empty');
+    }
+
+    function printContingencyPlan() {
+      // Update print-date before printing
+      var printDate = document.getElementById('cp-print-date');
+      if (printDate) {
+        var raw; try { raw = localStorage.getItem(CP_KEY); } catch (_) {}
+        var dateStr = raw ? (function() { try { var d = JSON.parse(raw); return 'Last saved: ' + new Date(d.lastSaved).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }); } catch(_) { return ''; } })() : '';
+        printDate.textContent = dateStr || 'Printed ' + new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+
+      // Mark empty sections so print CSS can hide them
+      if (typeof CONTINGENCY_PROMPTS !== 'undefined') {
+        CONTINGENCY_PROMPTS.sections.forEach(function(section) {
+          var card = document.getElementById('cp-section-' + section.id);
+          if (!card) return;
+          var hasContent = section.prompts.some(function(p) {
+            var el = document.getElementById('cp-' + section.id + '-' + p.id);
+            return el && el.value.trim().length > 0;
+          });
+          card.classList.toggle('cp-section-empty', !hasContent);
+        });
+      }
+
+      document.body.classList.add('printing-contingency');
+      window.print();
+      window.addEventListener('afterprint', function onAfterPrint() {
+        document.body.classList.remove('printing-contingency');
+        // Remove empty markers after print
+        document.querySelectorAll('.cp-section-empty').forEach(function(el) {
+          el.classList.remove('cp-section-empty');
+        });
+      }, { once: true });
+    }
 
     function loadLaunchChecklist() {
       try { return JSON.parse(localStorage.getItem(LAUNCH_CHECKLIST_KEY)) || {}; } catch (_) { return {}; }
@@ -7374,6 +8172,7 @@
       }
     }
     applyBranding();
+    loadAccessibilitySettings();
 
     /* ── Stage 15: call renderWhatsNew after branding ─ */
     renderWhatsNew();
@@ -7655,6 +8454,10 @@
           <li>Anonymous usage counts (checks started, checks completed, stages reached)</li>
           <li>Anonymous feedback (whether you found the tool helpful)</li>
         </ul>
+        <p style="margin-top:12px;font-weight:600;color:#1e293b;">If you use the contingency planner</p>
+        <p>The contingency planner (&ldquo;If you suddenly needed help&rdquo;) stores what you type — such as contact names, routine notes, and medication timing — on this device only. This information is <strong>not</strong> anonymous; it is personal to your situation. It is never sent anywhere. You can delete it at any time using the &ldquo;Clear all&rdquo; button inside the planner.</p>
+        <p style="margin-top:12px;font-weight:600;color:#1e293b;">Display and reading options</p>
+        <p>If you use the display and reading options panel, your choices (such as larger text or reduced motion) are saved on this device only. These settings contain no personal information. They are cleared if you clear your browser storage.</p>
       </div>
 
       <div class="info-section">
@@ -7716,6 +8519,12 @@
       <div class="info-section">
         <p class="info-section-title">Our commitment</p>
         <p>We aim to meet the Web Content Accessibility Guidelines (WCAG) 2.1 at Level AA. This is the standard required for UK public sector websites and the benchmark we follow for this tool.</p>
+      </div>
+
+      <div class="info-section">
+        <p class="info-section-title">Display and reading options</p>
+        <p>This tool includes built-in display adjustments you can turn on without changing your device settings. Open them using the &ldquo;Display options&rdquo; link on the home screen. Options include larger text, extra spacing, simplified view, reduced motion, high contrast, and a dyslexia-friendly font.</p>
+        <button class="btn-text-link" onclick="closeAccessibility(); openAccessibilitySettings();" style="font-size:14px;margin-top:4px;">Open display options</button>
       </div>
 
       <div class="info-section">
@@ -8247,6 +9056,77 @@
 
 
   <!-- ═══════════════════════════════════════════════════
+       CONTINGENCY PLANNER SCREEN (V2.5)
+  ════════════════════════════════════════════════════ -->
+  <section id="screen-contingency" class="screen" role="region" aria-label="Contingency planner">
+    <div class="container">
+
+      <nav class="screen-nav" aria-label="Contingency planner navigation">
+        <button class="btn-back" onclick="closeContingencyPlanner()" aria-label="Go back">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M11 4l-5 5 5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back
+        </button>
+      </nav>
+
+      <!-- Print-only header (hidden on screen) -->
+      <div class="cp-print-header">
+        <h2 style="font-size:16pt;font-weight:800;margin-bottom:4pt;">Contingency Plan</h2>
+        <p id="cp-print-date" style="font-size:10pt;color:#555;margin-bottom:4pt;"></p>
+        <p style="font-size:9pt;color:#666;border-bottom:1pt solid #ccc;padding-bottom:8pt;margin-bottom:16pt;">
+          Planning aid only — not a legal document, medical record, or safeguarding tool.
+          Prepared with CareStage (Carers Trust Solihull).
+        </p>
+      </div>
+
+      <h1 style="font-size:clamp(20px,4vw,26px);font-weight:800;color:#0f172a;margin-bottom:6px;line-height:1.25;">
+        If you suddenly needed help
+      </h1>
+      <p style="font-size:15px;color:#475569;line-height:1.6;margin-bottom:20px;max-width:560px;">
+        A simple planning tool to think about temporary support and important information.
+        Fill in as much or as little as you like — you can come back and add more at any time.
+      </p>
+
+      <!-- Privacy notice -->
+      <div class="contingency-notice" role="note" aria-label="Privacy information">
+        <span class="contingency-notice-icon" aria-hidden="true">🔒</span>
+        <p>Everything you write here is saved on this device only. Nothing is sent externally. Only you can see it.</p>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="contingency-disclaimer" role="note">
+        ℹ️ <strong>Planning aid only.</strong> Not a legal document, medical record, or safeguarding tool.
+        Do not record NHS numbers, diagnoses, passwords, or financial details here.
+      </div>
+
+      <!-- Sections — built from CONTINGENCY_PROMPTS by JS -->
+      <div id="cp-sections-container">
+        <!-- Populated by _buildContingencyPlannerIfNeeded() -->
+      </div>
+
+      <!-- Sticky save / action bar -->
+      <div class="cp-save-bar" aria-live="polite">
+        <span class="cp-save-status empty" id="cp-save-status" aria-label="Save status">Not yet saved</span>
+        <button class="btn-secondary" onclick="printContingencyPlan()" aria-label="Print your contingency plan">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+            <path d="M4 5V2h7v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="1.5" y="5" width="12" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M4 11v2h7v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="11" cy="8" r="0.75" fill="currentColor"/>
+          </svg>
+          Print plan
+        </button>
+        <button class="btn-text-link danger" onclick="clearContingencyPlan()" aria-label="Clear all entries in your contingency plan">
+          Clear all
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
        ABOUT MODAL (Stage 8)
   ════════════════════════════════════════════════════ -->
   <div class="about-overlay" id="about-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="about-title">
@@ -8285,6 +9165,99 @@
       </p>
 
       <button class="btn-outline" onclick="closeAbout()" style="margin-top:24px;max-width:100%;">Close</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       ACCESSIBILITY SETTINGS PANEL — V2.5 Feature 2
+  ════════════════════════════════════════════════════ -->
+  <div class="a11y-overlay" id="a11y-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="a11y-title">
+    <div class="a11y-panel" role="document">
+      <div class="a11y-panel-header">
+        <h2 class="a11y-panel-title" id="a11y-title">Display and reading options</h2>
+        <button class="a11y-close-btn" id="a11y-close-btn" onclick="closeAccessibilitySettings()" aria-label="Close display options">&#x2715;</button>
+      </div>
+
+      <div class="a11y-panel-body">
+
+        <div class="a11y-setting">
+          <div class="a11y-setting-info">
+            <span class="a11y-setting-label">Larger text</span>
+            <span class="a11y-setting-desc">Increases the size of body text and labels</span>
+          </div>
+          <button class="a11y-toggle" id="a11y-toggle-largeText"
+            role="switch" aria-checked="false" aria-label="Toggle larger text"
+            onclick="toggleA11ySetting('largeText')">
+            <span class="a11y-toggle-thumb"></span>
+          </button>
+        </div>
+
+        <div class="a11y-setting">
+          <div class="a11y-setting-info">
+            <span class="a11y-setting-label">Extra spacing</span>
+            <span class="a11y-setting-desc">Adds more space between buttons and sections</span>
+          </div>
+          <button class="a11y-toggle" id="a11y-toggle-extraSpacing"
+            role="switch" aria-checked="false" aria-label="Toggle extra spacing"
+            onclick="toggleA11ySetting('extraSpacing')">
+            <span class="a11y-toggle-thumb"></span>
+          </button>
+        </div>
+
+        <div class="a11y-setting">
+          <div class="a11y-setting-info">
+            <span class="a11y-setting-label">Simplified view</span>
+            <span class="a11y-setting-desc">Removes decorative shadows and backgrounds</span>
+          </div>
+          <button class="a11y-toggle" id="a11y-toggle-simplifiedView"
+            role="switch" aria-checked="false" aria-label="Toggle simplified view"
+            onclick="toggleA11ySetting('simplifiedView')">
+            <span class="a11y-toggle-thumb"></span>
+          </button>
+        </div>
+
+        <div class="a11y-setting">
+          <div class="a11y-setting-info">
+            <span class="a11y-setting-label">Reduce motion</span>
+            <span class="a11y-setting-desc">Stops animations and transitions</span>
+          </div>
+          <button class="a11y-toggle" id="a11y-toggle-reducedMotion"
+            role="switch" aria-checked="false" aria-label="Toggle reduce motion"
+            onclick="toggleA11ySetting('reducedMotion')">
+            <span class="a11y-toggle-thumb"></span>
+          </button>
+        </div>
+
+        <div class="a11y-setting">
+          <div class="a11y-setting-info">
+            <span class="a11y-setting-label">High contrast</span>
+            <span class="a11y-setting-desc">Adds stronger borders and bolder text colours</span>
+          </div>
+          <button class="a11y-toggle" id="a11y-toggle-highContrast"
+            role="switch" aria-checked="false" aria-label="Toggle high contrast"
+            onclick="toggleA11ySetting('highContrast')">
+            <span class="a11y-toggle-thumb"></span>
+          </button>
+        </div>
+
+        <div class="a11y-setting">
+          <div class="a11y-setting-info">
+            <span class="a11y-setting-label">Dyslexia-friendly font</span>
+            <span class="a11y-setting-desc">Switches to Arial for easier reading</span>
+          </div>
+          <button class="a11y-toggle" id="a11y-toggle-dyslexiaFriendly"
+            role="switch" aria-checked="false" aria-label="Toggle dyslexia-friendly font"
+            onclick="toggleA11ySetting('dyslexiaFriendly')">
+            <span class="a11y-toggle-thumb"></span>
+          </button>
+        </div>
+
+      </div><!-- /.a11y-panel-body -->
+
+      <div class="a11y-panel-footer">
+        <p class="a11y-privacy-note">Your display preferences are saved on this device only.</p>
+        <button class="btn-outline" onclick="resetAccessibilitySettings()" style="margin-top:10px;width:100%;">Reset to defaults</button>
+      </div>
     </div>
   </div>
 
