@@ -745,6 +745,41 @@
       font-size: 15px; color: #334155; line-height: 1.6;
     }
 
+    /* ── Emotional validation (V2 Stage 6) ─────────────────── */
+    .emotional-validation-card {
+      background: #f8f7ff; border-left: 3px solid #7c3aed;
+      border-radius: 0 10px 10px 0; padding: 16px 18px;
+    }
+    .emotional-intro {
+      font-size: 15px; color: #1e293b; line-height: 1.6; margin-bottom: 12px;
+    }
+    .emotional-feelings-list {
+      list-style: none; padding: 0; margin: 0 0 12px;
+      display: flex; flex-direction: column; gap: 7px;
+    }
+    .emotional-feelings-item {
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .emotional-feelings-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #7c3aed; flex-shrink: 0; margin-top: 9px;
+    }
+    .emotional-feelings-text {
+      font-size: 14px; color: #334155; line-height: 1.6;
+    }
+    .emotional-reassurance {
+      font-size: 14px; color: #475569; font-style: italic;
+      line-height: 1.6; margin-bottom: 8px;
+    }
+    .emotional-prompt {
+      font-size: 13px; color: #64748b; line-height: 1.55;
+    }
+    .emotional-pressure-note {
+      font-size: 13px; color: #64748b; background: #f1f5f9;
+      border-radius: 6px; padding: 8px 12px; margin-top: 12px;
+      line-height: 1.55; border-left: 2px solid #cbd5e1;
+    }
+
     /* ── Pressure check (V2 Stage 5) ───────────────────────── */
     .pressure-card {
       border-radius: 12px; padding: 20px 20px 16px;
@@ -2054,6 +2089,21 @@
         break-inside: avoid;
       }
 
+      /* Emotional validation — show in print, strip colour */
+      #emotional-validation-section[hidden] { display: none !important; }
+      #emotional-validation-section:not([hidden]) { display: block !important; }
+      .emotional-validation-card {
+        background: #fff !important; border-left: 2px solid #aaa !important;
+      }
+      .emotional-feelings-dot { background: #555 !important; }
+      .emotional-intro { color: #111 !important; }
+      .emotional-reassurance { color: #444 !important; }
+      .emotional-prompt { color: #555 !important; }
+      .emotional-pressure-note {
+        background: #f5f5f5 !important; border-left-color: #aaa !important;
+        color: #555 !important;
+      }
+
       /* What may happen next — show in print */
       #whats-next-result-section[hidden] { display: none !important; }
       #whats-next-result-section:not([hidden]) { display: block !important; }
@@ -3086,6 +3136,12 @@
         </p>
       </div>
 
+      <!-- How you may be feeling — Emotional validation (V2 Stage 6) -->
+      <div class="result-section" id="emotional-validation-section" hidden
+           aria-label="How you may be feeling at this stage">
+        <!-- filled by renderEmotionalValidation() -->
+      </div>
+
       <!-- Main action button -->
       <div class="result-action-section">
         <a class="btn-action" id="result-action-btn" href="#" target="_blank" rel="noopener noreferrer">
@@ -3530,6 +3586,7 @@
   <script src="src/content/nextSteps.js"></script>
   <script src="src/content/responsibilities.js"></script>
   <script src="src/content/pressureGuidance.js"></script>
+  <script src="src/content/emotionalValidation.js"></script>
   <script src="src/content/stageResults.js"></script>
   <script src="src/content/resources.js"></script>
   <script src="src/content/actionPlans.js"></script>
@@ -3954,6 +4011,13 @@
         }
       }
 
+      // Emotional validation (V2 Stage 6) — placed after condition, before action button
+      renderEmotionalValidation(
+        result.stage,
+        _currentCondition ? _currentCondition.id : null,
+        getPressureLevel(answers, _urgentWasShown)
+      );
+
       // Main action button
       const actionBtn = document.getElementById('result-action-btn');
       document.getElementById('result-action-label').textContent = result.action.label;
@@ -4157,6 +4221,25 @@
 
       const conditionLine = _currentCondition ? `Situation: ${_currentCondition.label}` : '';
 
+      // Emotional validation text (V2 Stage 6)
+      const evLevel = getPressureLevel(answers, _urgentWasShown);
+      const evStageData = (typeof EMOTIONAL_VALIDATION !== 'undefined') ? EMOTIONAL_VALIDATION[r.stage] : null;
+      const evCondId = _currentCondition ? _currentCondition.id : null;
+      const evContent = evStageData
+        ? (evCondId && evStageData[evCondId] ? evStageData[evCondId] : evStageData.generic)
+        : null;
+      const evPressureNote = evStageData && evStageData.pressureNotes && evStageData.pressureNotes[evLevel]
+        ? evStageData.pressureNotes[evLevel] : '';
+      const emotionalText = evContent
+        ? [
+            evContent.intro,
+            ...(evContent.feelings || []).map(f => `• ${f}`),
+            evContent.reassurance,
+            evContent.gentlePrompt,
+            ...(evPressureNote ? [evPressureNote] : []),
+          ].join('\n')
+        : '';
+
       // What may happen next text
       const nextItems = getNextGuidance(r.stage, _currentCondition ? _currentCondition.id : null);
       const whatsNextText = nextItems.length
@@ -4193,6 +4276,7 @@
         ``,
         `WHAT THIS MEANS`,
         r.meaning,
+        ...(emotionalText ? [``, `HOW YOU MAY BE FEELING`, `(Some feelings other carers at this stage describe — not a prediction of how you feel)`, emotionalText] : []),
         ``,
         `WHAT TO DO NEXT`,
         stepsText,
@@ -4635,6 +4719,116 @@
             '<ul class="pressure-list" aria-label="Suggested steps">' + nextStepsHtml + '</ul>' : '') +
           '<p class="pressure-support-prompt">' + guidance.supportPrompt + '</p>' +
           '<div class="pressure-action-row">' + actionBtns + '</div>' +
+        '</div>';
+
+      section.removeAttribute('hidden');
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       EMOTIONAL VALIDATION — V2 Stage 6
+    ══════════════════════════════════════════════════════════ */
+
+    /* Safe-language guard — warns in console if EMOTIONAL_VALIDATION
+       content contains clinical, diagnostic, or projective language.
+       Never throws; never shown to users. */
+    const _EMOTIONAL_UNSAFE_PATTERNS = [
+      /\bmust\b/i,
+      /\bwill\b(?!\s+not\b)/i,
+      /\bguaranteed\b/i,
+      /\binevitable\b/i,
+      /\beveryone\s+feels\b/i,
+      /\bdiagnosis\b/i,
+      /\bdisorder\b/i,
+      /\bclinical\b/i,
+      /\bfailure\b/i,
+      /\byou\s+should\s+always\b/i,
+    ];
+
+    function _validateEmotionalValidation() {
+      if (typeof EMOTIONAL_VALIDATION === 'undefined') return;
+      [1, 2, 3, 4, 5, 6].forEach(function(stage) {
+        var stageData = EMOTIONAL_VALIDATION[stage];
+        if (!stageData) return;
+        var conditionKeys = ['generic', 'dementia', 'physical', 'mental-health',
+                             'neurological', 'learning-disability', 'frailty'];
+        conditionKeys.forEach(function(key) {
+          var entry = stageData[key];
+          if (!entry) return;
+          var allText = [entry.intro, entry.reassurance, entry.gentlePrompt]
+            .concat(entry.feelings || []);
+          allText.forEach(function(text) {
+            if (!text) return;
+            _EMOTIONAL_UNSAFE_PATTERNS.forEach(function(pattern) {
+              if (pattern.test(text)) {
+                console.warn(
+                  '[CareStage] Safe-language check: possible unsafe language in ' +
+                  'emotionalValidation.js — stage=' + stage + ' key=' + key + ':', text
+                );
+              }
+            });
+          });
+        });
+      });
+    }
+
+    /* Renders (or hides) the #emotional-validation-section.
+       stage       — 1–6 (from current result)
+       conditionId — from _currentCondition.id or null
+       pressureLevel — 'low' | 'moderate' | 'high' or null */
+    function renderEmotionalValidation(stage, conditionId, pressureLevel) {
+      var section = document.getElementById('emotional-validation-section');
+      if (!section) return;
+
+      if (typeof EMOTIONAL_VALIDATION === 'undefined') {
+        section.setAttribute('hidden', '');
+        return;
+      }
+
+      _validateEmotionalValidation();
+
+      var stageData = EMOTIONAL_VALIDATION[stage];
+      if (!stageData) { section.setAttribute('hidden', ''); return; }
+
+      // Condition-specific content with generic fallback
+      var content;
+      if (conditionId && stageData[conditionId]) {
+        content = stageData[conditionId];
+      } else {
+        content = stageData.generic;
+      }
+      if (!content) { section.setAttribute('hidden', ''); return; }
+
+      // Feelings bullets
+      var feelingsHtml = (content.feelings || []).map(function(f) {
+        return '<li class="emotional-feelings-item">' +
+          '<span class="emotional-feelings-dot" aria-hidden="true"></span>' +
+          '<span class="emotional-feelings-text">' + f + '</span>' +
+          '</li>';
+      }).join('');
+
+      // Optional pressure note
+      var pressureNote = '';
+      if (pressureLevel && stageData.pressureNotes &&
+          stageData.pressureNotes[pressureLevel]) {
+        pressureNote =
+          '<p class="emotional-pressure-note">' +
+            stageData.pressureNotes[pressureLevel] +
+          '</p>';
+      }
+
+      section.innerHTML =
+        '<p class="result-section-label">How you may be feeling</p>' +
+        '<div class="emotional-validation-card">' +
+          '<p class="emotional-intro">' + content.intro + '</p>' +
+          (feelingsHtml
+            ? '<ul class="emotional-feelings-list" ' +
+                'aria-label="Feelings some carers experience at this stage">' +
+                feelingsHtml +
+              '</ul>'
+            : '') +
+          '<p class="emotional-reassurance">' + content.reassurance + '</p>' +
+          '<p class="emotional-prompt">' + content.gentlePrompt + '</p>' +
+          pressureNote +
         '</div>';
 
       section.removeAttribute('hidden');
@@ -6175,6 +6369,24 @@
         text += `Situation: ${_currentCondition.label}\n`;
       }
       text += `${date}\n\n`;
+
+      // Emotional validation (V2 Stage 6)
+      const ssEvLevel = getPressureLevel(answers, _urgentWasShown);
+      const ssEvStageData = (typeof EMOTIONAL_VALIDATION !== 'undefined') ? EMOTIONAL_VALIDATION[r.stage] : null;
+      const ssEvCondId = _currentCondition ? _currentCondition.id : null;
+      const ssEvContent = ssEvStageData
+        ? (ssEvCondId && ssEvStageData[ssEvCondId] ? ssEvStageData[ssEvCondId] : ssEvStageData.generic)
+        : null;
+      if (ssEvContent) {
+        text += `HOW YOU MAY BE FEELING\n`;
+        text += `${ssEvContent.intro}\n`;
+        (ssEvContent.feelings || []).forEach(f => { text += `• ${f}\n`; });
+        text += `${ssEvContent.reassurance}\n`;
+        if (ssEvStageData.pressureNotes && ssEvStageData.pressureNotes[ssEvLevel]) {
+          text += `${ssEvStageData.pressureNotes[ssEvLevel]}\n`;
+        }
+        text += '\n';
+      }
 
       // Stage 11 — agreed next step
       const agreedRaw = (() => {
