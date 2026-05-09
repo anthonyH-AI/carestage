@@ -745,6 +745,79 @@
       font-size: 15px; color: #334155; line-height: 1.6;
     }
 
+    /* ── Pressure check (V2 Stage 5) ───────────────────────── */
+    .pressure-card {
+      border-radius: 12px; padding: 20px 20px 16px;
+      margin: 0; width: 100%;
+    }
+    .pressure-card.pressure-low {
+      background: #f0fdf4; border: 1.5px solid #bbf7d0;
+    }
+    .pressure-card.pressure-moderate {
+      background: #fffbeb; border: 1.5px solid #fde68a;
+    }
+    .pressure-card.pressure-high {
+      background: #fff1f2; border: 1.5px solid #fecdd3;
+    }
+    .pressure-badge {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      padding: 3px 10px; border-radius: 20px; margin-bottom: 10px;
+    }
+    .pressure-low .pressure-badge   { background: #dcfce7; color: #15803d; }
+    .pressure-moderate .pressure-badge { background: #fef3c7; color: #92400e; }
+    .pressure-high .pressure-badge  { background: #ffe4e6; color: #9f1239; }
+    .pressure-intro {
+      font-size: 15px; color: #1e293b; font-weight: 600;
+      line-height: 1.5; margin-bottom: 16px;
+    }
+    .pressure-sub-label {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: #64748b; margin-bottom: 8px;
+    }
+    .pressure-list {
+      list-style: none; padding: 0; margin: 0 0 14px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .pressure-item {
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .pressure-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      flex-shrink: 0; margin-top: 9px;
+    }
+    .pressure-low  .pressure-dot { background: #16a34a; }
+    .pressure-moderate .pressure-dot { background: #d97706; }
+    .pressure-high .pressure-dot { background: #e11d48; }
+    .pressure-item-text {
+      font-size: 14px; color: #334155; line-height: 1.6;
+    }
+    .pressure-support-prompt {
+      font-size: 14px; color: #475569; line-height: 1.6;
+      font-style: italic; margin-bottom: 14px;
+    }
+    .pressure-action-row {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;
+    }
+    .pressure-action-btn {
+      font-size: 13px; font-weight: 600; padding: 8px 14px;
+      border-radius: 8px; border: none; cursor: pointer;
+      text-decoration: none; display: inline-flex;
+      align-items: center; gap: 5px; transition: opacity 0.15s;
+      font-family: inherit;
+    }
+    .pressure-action-btn:hover { opacity: 0.85; }
+    .pressure-action-btn.btn-directory {
+      background: #0f766e; color: #fff;
+    }
+    .pressure-action-btn.btn-urgent {
+      background: #dc2626; color: #fff;
+    }
+    .pressure-action-btn.btn-bridgit {
+      background: #f1f5f9; color: #0f172a;
+      border: 1px solid #cbd5e1;
+    }
+
     /* Help link — teal, underlined, clear external indicator */
     a.help-link {
       color: #0f766e;
@@ -1993,6 +2066,16 @@
       .responsibilities-dot { background: #333 !important; }
       .responsibilities-hint { color: #555 !important; }
 
+      /* Pressure check — show in print, strip colour, hide action buttons */
+      #pressure-check-section[hidden] { display: none !important; }
+      #pressure-check-section:not([hidden]) { display: block !important; }
+      .pressure-card { background: #fff !important; border: 1px solid #ccc !important; }
+      .pressure-badge { background: #f0f0f0 !important; color: #333 !important; }
+      .pressure-dot { background: #555 !important; }
+      .pressure-intro { color: #111 !important; }
+      .pressure-support-prompt { color: #444 !important; }
+      .pressure-action-row { display: none !important; }
+
       .result-stage-label {
         border: 1px solid #333 !important;
         background: none !important;
@@ -2316,6 +2399,34 @@
     }
     .resource-card-phone:hover { text-decoration: underline; }
     .resource-card.resource-emergency .resource-card-phone { color: #b91c1c; font-size: 15px; }
+
+    /* ── V2 Stage 4: Condition-aware resource highlighting ─────── */
+    .resource-condition-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #166534;
+      background: #dcfce7;
+      border-radius: 4px;
+      padding: 2px 7px;
+      margin-bottom: 6px;
+      letter-spacing: 0.01em;
+    }
+    .resource-card.resource-condition-match   { border-color: #bbf7d0; }
+    .stage-rec-card.stage-rec-condition-match { border-color: #bbf7d0; }
+    .dir-chip.chip-suggested { border-color: #16a34a; color: #166534; }
+    .dir-chip.chip-suggested:hover { border-color: #15803d; color: #166534; background: #f0fdf4; }
+    .dir-chip.chip-suggested.active { border-color: #166534; color: #14532d; background: #dcfce7; font-weight: 700; }
+    .dir-condition-note {
+      font-size: 13px;
+      color: #166534;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
 
     /* ── Urgent Help Screen ────────────────────────────────────── */
     #screen-urgent-help { align-items: flex-start; }
@@ -3027,6 +3138,12 @@
             aria-label="Practical responsibilities some carers at this stage begin to take on"></ul>
       </div>
 
+      <!-- Pressure check (V2 Stage 5) -->
+      <div class="result-section" id="pressure-check-section" hidden
+           aria-label="Pressure check — how your answers suggest things may be going">
+        <!-- filled by renderPressureCheck() -->
+      </div>
+
       <!-- Learn more expandable -->
       <details class="learn-more-section" id="learn-more-section">
         <summary class="learn-more-toggle" aria-label="Learn more about this stage">
@@ -3129,7 +3246,7 @@
       <!-- Recommended resources for this stage (from resources.js) -->
       <div class="result-section stage-recs-section" id="stage-recs-section" style="display:none">
         <div class="stage-recs-header">
-          <p class="result-section-label">Recommended for your stage</p>
+          <p class="result-section-label" id="stage-recs-label">Recommended for your stage</p>
           <button class="btn-text-link" onclick="showDirectory()" aria-label="View the full support directory">View all support</button>
         </div>
         <div class="stage-recs-list" id="stage-recs-list" aria-label="Resources recommended for your stage"></div>
@@ -3412,6 +3529,7 @@
   <script src="src/content/conditions.js"></script>
   <script src="src/content/nextSteps.js"></script>
   <script src="src/content/responsibilities.js"></script>
+  <script src="src/content/pressureGuidance.js"></script>
   <script src="src/content/stageResults.js"></script>
   <script src="src/content/resources.js"></script>
   <script src="src/content/actionPlans.js"></script>
@@ -3442,6 +3560,7 @@
     let _directoryFromScreen = 'screen-landing';
     let _urgentHelpFromScreen = 'screen-landing';
     let _dirCategory = 'all';
+    let _dirSuggestedFilter = false;  // V2 Stage 4: "Suggested for my situation" chip state
     let _currentActionPlanStage = null;  // stage number currently shown in action plan
     let _currentCondition = null;        // V2 Stage 1: { id, label } or null if skipped
     let _resultOverride = null;          // set before renderResult() to bypass scoring (used by jumpToStage)
@@ -3961,6 +4080,9 @@
       // What you may need to do (V2 Stage 3)
       renderResponsibilities(result.stage, _currentCondition ? _currentCondition.id : null);
 
+      // Pressure check (V2 Stage 5)
+      renderPressureCheck();
+
       // Action plan (from action-plans.js)
       renderActionPlan(result.stage);
 
@@ -4047,6 +4169,20 @@
         ? respItems.map(t => `• ${t}`).join('\n')
         : '';
 
+      // Pressure check text
+      const pressureLevel = getPressureLevel(answers, _urgentWasShown);
+      const pressureData  = (typeof PRESSURE_GUIDANCE !== 'undefined') ? PRESSURE_GUIDANCE[pressureLevel] : null;
+      const pressureText  = pressureData
+        ? [
+            `Level: ${pressureData.label}`,
+            pressureData.intro,
+            ...(pressureData.signs    || []).map(t => `• ${t}`),
+            `What may help:`,
+            ...(pressureData.nextSteps || []).map(t => `• ${t}`),
+            pressureData.supportPrompt,
+          ].join('\n')
+        : '';
+
       return [
         `MALE CARER STAGE CHECKER — MY RESULT`,
         `Completed: ${dateStr}`,
@@ -4062,6 +4198,7 @@
         stepsText,
         ...(whatsNextText ? [``, `WHAT MAY HAPPEN NEXT`, `(Some situations other carers at this stage have noticed — not a prediction)`, whatsNextText] : []),
         ...(responsibilitiesText ? [``, `WHAT YOU MAY NEED TO DO`, `(Practical responsibilities some carers at this stage begin to take on — at your own pace)`, responsibilitiesText] : []),
+        ...(pressureText ? [``, `PRESSURE CHECK`, `(Based on your answers — not a diagnosis)`, pressureText] : []),
         ``,
         `HELPFUL TIP`,
         r.tip,
@@ -4332,6 +4469,177 @@
       section.removeAttribute('hidden');
     }
 
+    /* ══════════════════════════════════════════════════════════
+       PRESSURE CHECK — V2 Stage 5
+    ══════════════════════════════════════════════════════════ */
+
+    /* Safe-language guard — warns in console if PRESSURE_GUIDANCE
+       content contains clinical, guilt-based, or diagnostic language.
+       Never throws; never shown to users. */
+    const _PRESSURE_UNSAFE_PATTERNS = [
+      /\bmust\b/i,
+      /\bwill\b(?!\s+not\b)/i,
+      /\bguaranteed\b/i,
+      /\binevitable\b/i,
+      /\bfailure\b/i,
+      /\brisk\s+score\b/i,
+      /\bburnt\s+out\b/i,
+      /\bburnout\s+diagnosis\b/i,
+      /\byou\s+should\s+always\b/i,
+      /\byou\s+are\s+expected\s+to\b/i,
+    ];
+
+    function _validatePressureGuidance() {
+      if (typeof PRESSURE_GUIDANCE === 'undefined') return;
+      ['low', 'moderate', 'high'].forEach(function(level) {
+        var g = PRESSURE_GUIDANCE[level];
+        if (!g) return;
+        var allText = [g.intro, g.supportPrompt]
+          .concat(g.signs || [])
+          .concat(g.nextSteps || []);
+        allText.forEach(function(text) {
+          if (!text) return;
+          _PRESSURE_UNSAFE_PATTERNS.forEach(function(pattern) {
+            if (pattern.test(text)) {
+              console.warn(
+                '[CareStage] Safe-language check: possible unsafe language in ' +
+                'pressureGuidance.js — level=' + level + ':', text
+              );
+            }
+          });
+        });
+      });
+    }
+
+    /* Calculates a pressure level from the carer's answers.
+       Uses Q3 (organisation), Q4 (pressure type), Q5 (support),
+       Q6 (coping — weighted highest), Q7 (risk), and whether the
+       urgent screen was shown.
+       Returns: 'low' | 'moderate' | 'high'  */
+    function getPressureLevel(answersObj, urgentWasShown) {
+      // Urgent screen shown → high pressure regardless of score
+      if (urgentWasShown) return 'high';
+
+      var points = 0;
+
+      // Q3 (index 2) — organisation
+      var q3 = answersObj[2];
+      if (q3 === 'Chaotic')                    points += 2;
+      else if (q3 === 'Some things are in place') points += 1;
+
+      // Q4 (index 3) — biggest pressure type
+      var q4 = answersObj[3];
+      if (q4 === 'Feeling tired, stressed, or isolated')      points += 2;
+      else if (q4 === 'Managing appointments, medication, or tasks') points += 1;
+
+      // Q5 (index 4) — support in place
+      var q5 = answersObj[4];
+      if (q5 === 'I need urgent help') points += 3;
+      else if (q5 === 'No')            points += 1;
+
+      // Q6 (index 5) — coping (highest weight, mirrors scoring intent)
+      var q6 = answersObj[5];
+      if (q6 === 'I am exhausted or close to burnout') points += 3;
+      else if (q6 === 'I feel overwhelmed')             points += 2;
+      else if (q6 === 'Some days are difficult')        points += 1;
+
+      // Q7 (index 6) — risk to anyone
+      var q7 = answersObj[6];
+      if (q7 === 'Yes, I am concerned') points += 2;
+      else if (q7 === 'Not sure')        points += 1;
+
+      if (points >= 4) return 'high';
+      if (points >= 2) return 'moderate';
+      return 'low';
+    }
+
+    /* Renders (or hides) the #pressure-check-section on the result page. */
+    function renderPressureCheck() {
+      var section = document.getElementById('pressure-check-section');
+      if (!section) return;
+
+      if (typeof PRESSURE_GUIDANCE === 'undefined') {
+        section.setAttribute('hidden', '');
+        return;
+      }
+
+      // Run safe-language check once (dev guard, console only)
+      _validatePressureGuidance();
+
+      var level    = getPressureLevel(answers, _urgentWasShown);
+      var guidance = PRESSURE_GUIDANCE[level];
+      if (!guidance) { section.setAttribute('hidden', ''); return; }
+
+      // Build signs HTML
+      var signsHtml = (guidance.signs || []).map(function(text) {
+        return '<li class="pressure-item">' +
+          '<span class="pressure-dot" aria-hidden="true"></span>' +
+          '<span class="pressure-item-text">' + text + '</span>' +
+          '</li>';
+      }).join('');
+
+      // Build next steps HTML
+      var nextStepsHtml = (guidance.nextSteps || []).map(function(text) {
+        return '<li class="pressure-item">' +
+          '<span class="pressure-dot" aria-hidden="true"></span>' +
+          '<span class="pressure-item-text">' + text + '</span>' +
+          '</li>';
+      }).join('');
+
+      // Build action buttons (level-dependent)
+      var bridgitUrl = (typeof HELP_LINKS !== 'undefined' && HELP_LINKS.BRIDGIT_CARE)
+        ? HELP_LINKS.BRIDGIT_CARE : null;
+
+      var actionBtns = '';
+      if (level === 'high') {
+        actionBtns +=
+          '<button class="pressure-action-btn btn-urgent" ' +
+            'onclick="showUrgentHelp()" aria-label="Get help now — view urgent support options">' +
+            'Get help now' +
+          '</button> ';
+      }
+      if (level === 'moderate' || level === 'high') {
+        actionBtns +=
+          '<button class="pressure-action-btn btn-directory" ' +
+            'onclick="showDirectory(\'screen-result\')" aria-label="Browse the support directory">' +
+            'Support directory' +
+          '</button> ';
+        if (bridgitUrl) {
+          actionBtns +=
+            '<a class="pressure-action-btn btn-bridgit" ' +
+              'href="' + bridgitUrl + '" target="_blank" rel="noopener noreferrer" ' +
+              'aria-label="Open Bridgit Care AI for 24/7 carer support">' +
+              'Bridgit Care AI' +
+            '</a>';
+        }
+      } else {
+        // low: just a directory link
+        actionBtns +=
+          '<button class="pressure-action-btn btn-directory" ' +
+            'onclick="showDirectory(\'screen-result\')" aria-label="Browse the support directory">' +
+            'Support directory' +
+          '</button>';
+      }
+
+      section.innerHTML =
+        '<p class="result-section-label">Pressure check</p>' +
+        '<div class="pressure-card pressure-' + level + '" role="region" ' +
+             'aria-label="Pressure check — ' + guidance.label + '">' +
+          '<span class="pressure-badge">' + guidance.label + '</span>' +
+          '<p class="pressure-intro">' + guidance.intro + '</p>' +
+          (signsHtml ?
+            '<p class="pressure-sub-label">You may recognise some of these</p>' +
+            '<ul class="pressure-list" aria-label="Signs of pressure at this level">' + signsHtml + '</ul>' : '') +
+          (nextStepsHtml ?
+            '<p class="pressure-sub-label">Some things that may help</p>' +
+            '<ul class="pressure-list" aria-label="Suggested steps">' + nextStepsHtml + '</ul>' : '') +
+          '<p class="pressure-support-prompt">' + guidance.supportPrompt + '</p>' +
+          '<div class="pressure-action-row">' + actionBtns + '</div>' +
+        '</div>';
+
+      section.removeAttribute('hidden');
+    }
+
     function goNext() {
       if (typeof currentStep !== 'number') return;
       if (!answers[currentStep]) return;
@@ -4399,25 +4707,67 @@
     /* ═══════════════════════════════════════════════════
        STAGE RECOMMENDATIONS (uses resources.js data)
     ════════════════════════════════════════════════════ */
+    /* Returns true if this resource is tagged for the given conditionId. */
+    function _conditionMatchesResource(resource, conditionId) {
+      if (!conditionId || !resource.conditionTags || !resource.conditionTags.length) return false;
+      return resource.conditionTags.includes(conditionId);
+    }
+
     function renderStageRecommendations(stageNum) {
       const section = document.getElementById('stage-recs-section');
-      const list = document.getElementById('stage-recs-list');
+      const list    = document.getElementById('stage-recs-list');
+      const label   = document.getElementById('stage-recs-label');
 
       if (typeof STAGE_RECOMMENDATIONS === 'undefined' || typeof RESOURCES === 'undefined') {
         section.style.display = 'none';
         return;
       }
 
-      const recIds = STAGE_RECOMMENDATIONS[stageNum] || [];
-      const recs = recIds.map(id => RESOURCES.find(r => r.id === id)).filter(Boolean);
+      const conditionId = _currentCondition?.id || null;
+      let recs;
+
+      if (conditionId) {
+        // Condition-aware: condition-matched stage resources first (by priority),
+        // then fill in base stage recs to avoid leaving empty slots.
+        const stagePool = RESOURCES.filter(r => r.appliesToStages.includes(stageNum));
+        const matched   = stagePool
+          .filter(r => _conditionMatchesResource(r, conditionId))
+          .sort((a, b) => (a.priority ?? 99) - (b.priority ?? 99));
+
+        const baseIds = STAGE_RECOMMENDATIONS[stageNum] || [];
+        const baseRecs = baseIds.map(id => RESOURCES.find(r => r.id === id)).filter(Boolean);
+
+        const seen   = new Set(matched.map(r => r.id));
+        const merged = [...matched];
+        for (const r of baseRecs) {
+          if (!seen.has(r.id)) { merged.push(r); seen.add(r.id); }
+        }
+        recs = merged.slice(0, 5);
+      } else {
+        // Fallback: stage-only recommendations
+        const recIds = STAGE_RECOMMENDATIONS[stageNum] || [];
+        recs = recIds.map(id => RESOURCES.find(r => r.id === id)).filter(Boolean);
+      }
 
       if (!recs.length) { section.style.display = 'none'; return; }
+
+      if (label) {
+        label.textContent = conditionId
+          ? 'Suggested support for your situation'
+          : 'Recommended for your stage';
+      }
 
       section.style.display = '';
       list.innerHTML = '';
       recs.forEach(r => {
-        const card = document.createElement('div');
+        const isMatch = _conditionMatchesResource(r, conditionId);
+        const card    = document.createElement('div');
         card.className = 'stage-rec-card';
+        if (isMatch) card.classList.add('stage-rec-condition-match');
+
+        const conditionBadge = (isMatch && conditionId)
+          ? `<p class="resource-condition-badge">Suggested for your situation</p>`
+          : '';
 
         const links = [];
         if (r.url) {
@@ -4428,10 +4778,11 @@
           links.push(`<a class="stage-rec-phone" href="${tel}">Call ${r.phone}</a>`);
         }
         if (!r.url && !r.phone) {
-          links.push(`<span style="font-size:13px;color: #64748b;">Contact directly</span>`);
+          links.push(`<span style="font-size:13px;color:#64748b;">Contact directly</span>`);
         }
 
         card.innerHTML = `
+          ${conditionBadge}
           <p class="stage-rec-name">${r.name}</p>
           <p class="stage-rec-desc">${r.description}</p>
           <div class="stage-rec-links">${links.join('')}</div>
@@ -4447,6 +4798,7 @@
       _directoryFromScreen = fromScreen || _activeScreen;
       // Reset filters
       _dirCategory = 'all';
+      _dirSuggestedFilter = false;
       const searchEl = document.getElementById('dir-search');
       const urgentEl = document.getElementById('dir-urgent-only');
       if (searchEl) searchEl.value = '';
@@ -4473,24 +4825,45 @@
         btn.onclick = () => setCategoryFilter(btn, cat.id);
         row.appendChild(btn);
       });
+
+      // V2 Stage 4: add "Suggested for my situation" chip when condition is known
+      if (_currentCondition) {
+        const chip = document.createElement('button');
+        chip.className = 'dir-chip chip-suggested' + (_dirSuggestedFilter ? ' active' : '');
+        chip.id = 'dir-suggested-chip';
+        chip.setAttribute('aria-pressed', _dirSuggestedFilter ? 'true' : 'false');
+        chip.setAttribute('aria-label', 'Show only services suggested for your situation');
+        chip.textContent = 'Suggested for my situation';
+        chip.onclick = () => toggleSuggestedFilter(chip);
+        row.appendChild(chip);
+      }
     }
 
     function setCategoryFilter(el, cat) {
       _dirCategory = cat;
-      document.querySelectorAll('.dir-chip').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.dir-chip:not(.chip-suggested)').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
+      filterDirectory();
+    }
+
+    function toggleSuggestedFilter(el) {
+      _dirSuggestedFilter = !_dirSuggestedFilter;
+      el.classList.toggle('active', _dirSuggestedFilter);
+      el.setAttribute('aria-pressed', _dirSuggestedFilter ? 'true' : 'false');
       filterDirectory();
     }
 
     function filterDirectory() {
       if (typeof RESOURCES === 'undefined') return;
 
-      const search = (document.getElementById('dir-search')?.value || '').toLowerCase().trim();
-      const urgentOnly = document.getElementById('dir-urgent-only')?.checked;
+      const search      = (document.getElementById('dir-search')?.value || '').toLowerCase().trim();
+      const urgentOnly  = document.getElementById('dir-urgent-only')?.checked;
+      const conditionId = _currentCondition?.id || null;
 
-      const filtered = RESOURCES.filter(r => {
+      let filtered = RESOURCES.filter(r => {
         if (_dirCategory !== 'all' && r.category !== _dirCategory) return false;
         if (urgentOnly && r.urgencyLevel === 'standard') return false;
+        if (_dirSuggestedFilter && !_conditionMatchesResource(r, conditionId)) return false;
         if (search) {
           const haystack = `${r.name} ${r.description} ${r.category}`.toLowerCase();
           if (!haystack.includes(search)) return false;
@@ -4498,24 +4871,50 @@
         return true;
       });
 
+      // V2 Stage 4: sort condition-matched resources first, then by priority within matched group
+      if (conditionId) {
+        filtered.sort((a, b) => {
+          const aMatch = _conditionMatchesResource(a, conditionId);
+          const bMatch = _conditionMatchesResource(b, conditionId);
+          if (aMatch !== bMatch) return aMatch ? -1 : 1;
+          if (aMatch && bMatch) return (a.priority ?? 99) - (b.priority ?? 99);
+          return 0;
+        });
+      }
+
       const container = document.getElementById('dir-results');
-      const countEl = document.getElementById('dir-results-count');
+      const countEl   = document.getElementById('dir-results-count');
       countEl.textContent = `${filtered.length} service${filtered.length !== 1 ? 's' : ''} found`;
 
       if (!filtered.length) {
-        container.innerHTML = '<p class="dir-empty">No services match your search.<br>Try different words or remove filters.</p>';
+        const msg = _dirSuggestedFilter
+          ? `<p class="dir-empty">No suggested services match your current filters.<br>Remove the 'Suggested for my situation' filter to see all services.</p>`
+          : `<p class="dir-empty">No services match your search.<br>Try different words or remove filters.</p>`;
+        container.innerHTML = msg;
         return;
       }
 
-      container.innerHTML = '';
+      // When the suggested filter is active, show a safeguard note
+      let headerNote = '';
+      if (_dirSuggestedFilter && conditionId && _currentCondition?.label) {
+        headerNote = `<p class="dir-condition-note" role="note">Showing services that may be especially helpful for <strong>${_currentCondition.label}</strong>. All other services remain available — remove this filter to see them.</p>`;
+      }
+      container.innerHTML = headerNote;
+
       filtered.forEach(r => {
-        const card = document.createElement('div');
+        const isMatch = _conditionMatchesResource(r, conditionId);
+        const card    = document.createElement('div');
         card.className = 'resource-card';
         if (r.urgencyLevel === 'urgent')    card.classList.add('resource-urgent');
         if (r.urgencyLevel === 'emergency') card.classList.add('resource-emergency');
+        if (isMatch) card.classList.add('resource-condition-match');
         card.setAttribute('role', 'listitem');
 
-        const badge = r.urgencyLevel !== 'standard'
+        const conditionBadge = (isMatch && conditionId)
+          ? `<p class="resource-condition-badge">Suggested for your situation</p>`
+          : '';
+
+        const urgencyBadge = r.urgencyLevel !== 'standard'
           ? `<span class="resource-urgency-badge badge-${r.urgencyLevel}">${r.urgencyLevel === 'emergency' ? 'Emergency' : 'Urgent'}</span>`
           : '';
 
@@ -4528,13 +4927,14 @@
           links.push(`<a class="resource-card-phone" href="${tel}">Call ${r.phone}</a>`);
         }
         if (!r.url && !r.phone) {
-          links.push(`<span style="font-size:13px;color: #64748b;">Contact directly</span>`);
+          links.push(`<span style="font-size:13px;color:#64748b;">Contact directly</span>`);
         }
 
         card.innerHTML = `
+          ${conditionBadge}
           <div class="resource-card-header">
             <p class="resource-card-name">${r.name}</p>
-            ${badge}
+            ${urgencyBadge}
           </div>
           <p class="resource-card-desc">${r.description}</p>
           <div class="resource-card-links">${links.join('')}</div>
@@ -5817,6 +6217,18 @@
       if (respItems.length) {
         text += `WHAT YOU MAY NEED TO DO\n`;
         respItems.forEach(item => { text += `• ${item}\n`; });
+        text += '\n';
+      }
+
+      // Pressure check (V2 Stage 5)
+      const ssLevel = getPressureLevel(answers, _urgentWasShown);
+      const ssGuidance = (typeof PRESSURE_GUIDANCE !== 'undefined') ? PRESSURE_GUIDANCE[ssLevel] : null;
+      if (ssGuidance) {
+        text += `PRESSURE CHECK (${ssGuidance.label.toUpperCase()})\n`;
+        text += `${ssGuidance.intro}\n`;
+        if (ssGuidance.nextSteps && ssGuidance.nextSteps.length) {
+          ssGuidance.nextSteps.forEach(item => { text += `• ${item}\n`; });
+        }
         text += '\n';
       }
 
