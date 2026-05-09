@@ -853,6 +853,37 @@
       border: 1px solid #cbd5e1;
     }
 
+    /* ── Progression guidance (V2 Stage 7) ─────────────────── */
+    .progression-card {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-left: 4px solid #6366f1;
+      border-radius: 10px; padding: 18px 20px;
+    }
+    .progression-title {
+      font-size: 15px; font-weight: 700; color: #3730a3;
+      margin-bottom: 8px; line-height: 1.4;
+    }
+    .progression-intro {
+      font-size: 14px; color: #475569; line-height: 1.65; margin-bottom: 14px;
+    }
+    .progression-list {
+      list-style: none; padding: 0; margin: 0 0 14px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .progression-item {
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .progression-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #6366f1; flex-shrink: 0; margin-top: 8px;
+    }
+    .progression-text {
+      font-size: 14px; color: #334155; line-height: 1.6;
+    }
+    .progression-reassurance {
+      font-size: 14px; color: #4338ca; font-style: italic; line-height: 1.6;
+    }
+
     /* Help link — teal, underlined, clear external indicator */
     a.help-link {
       color: #0f766e;
@@ -2126,6 +2157,19 @@
       .pressure-support-prompt { color: #444 !important; }
       .pressure-action-row { display: none !important; }
 
+      /* Progression guidance — show in print, strip colour */
+      #progression-section[hidden] { display: none !important; }
+      #progression-section:not([hidden]) { display: block !important; }
+      .progression-card {
+        background: #fff !important; border: 1px solid #ccc !important;
+        border-left: 3px solid #aaa !important;
+      }
+      .progression-dot { background: #555 !important; }
+      .progression-title { color: #111 !important; }
+      .progression-intro { color: #333 !important; }
+      .progression-text { color: #333 !important; }
+      .progression-reassurance { color: #444 !important; }
+
       .result-stage-label {
         border: 1px solid #333 !important;
         background: none !important;
@@ -3200,6 +3244,12 @@
         <!-- filled by renderPressureCheck() -->
       </div>
 
+      <!-- Progression guidance (V2 Stage 7) -->
+      <div class="result-section" id="progression-section" hidden
+           aria-label="Progression — caring rarely follows a straight line">
+        <!-- filled by renderProgressionGuidance() -->
+      </div>
+
       <!-- Learn more expandable -->
       <details class="learn-more-section" id="learn-more-section">
         <summary class="learn-more-toggle" aria-label="Learn more about this stage">
@@ -3587,6 +3637,7 @@
   <script src="src/content/responsibilities.js"></script>
   <script src="src/content/pressureGuidance.js"></script>
   <script src="src/content/emotionalValidation.js"></script>
+  <script src="src/content/progressionGuidance.js"></script>
   <script src="src/content/stageResults.js"></script>
   <script src="src/content/resources.js"></script>
   <script src="src/content/actionPlans.js"></script>
@@ -4147,6 +4198,9 @@
       // Pressure check (V2 Stage 5)
       renderPressureCheck();
 
+      // Progression guidance (V2 Stage 7)
+      renderProgressionGuidance(result.stage);
+
       // Action plan (from action-plans.js)
       renderActionPlan(result.stage);
 
@@ -4266,6 +4320,18 @@
           ].join('\n')
         : '';
 
+      // Progression guidance text (V2 Stage 7)
+      const progData = (typeof PROGRESSION_GUIDANCE !== 'undefined')
+        ? (r.stage === 6 ? PROGRESSION_GUIDANCE.stage6 : PROGRESSION_GUIDANCE.generic)
+        : null;
+      const progressionText = progData
+        ? [
+            progData.intro,
+            ...(progData.points || []).map(p => `• ${p}`),
+            progData.reassurance,
+          ].join('\n')
+        : '';
+
       return [
         `MALE CARER STAGE CHECKER — MY RESULT`,
         `Completed: ${dateStr}`,
@@ -4283,6 +4349,7 @@
         ...(whatsNextText ? [``, `WHAT MAY HAPPEN NEXT`, `(Some situations other carers at this stage have noticed — not a prediction)`, whatsNextText] : []),
         ...(responsibilitiesText ? [``, `WHAT YOU MAY NEED TO DO`, `(Practical responsibilities some carers at this stage begin to take on — at your own pace)`, responsibilitiesText] : []),
         ...(pressureText ? [``, `PRESSURE CHECK`, `(Based on your answers — not a diagnosis)`, pressureText] : []),
+        ...(progressionText ? [``, `CARING RARELY FOLLOWS A STRAIGHT LINE`, progressionText] : []),
         ``,
         `HELPFUL TIP`,
         r.tip,
@@ -4719,6 +4786,45 @@
             '<ul class="pressure-list" aria-label="Suggested steps">' + nextStepsHtml + '</ul>' : '') +
           '<p class="pressure-support-prompt">' + guidance.supportPrompt + '</p>' +
           '<div class="pressure-action-row">' + actionBtns + '</div>' +
+        '</div>';
+
+      section.removeAttribute('hidden');
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       PROGRESSION GUIDANCE — V2 Stage 7
+    ══════════════════════════════════════════════════════════ */
+
+    /* Renders (or hides) the #progression-section on the result page.
+       Uses the stage6 variant when stage === 6, generic otherwise. */
+    function renderProgressionGuidance(stage) {
+      var section = document.getElementById('progression-section');
+      if (!section) return;
+      if (typeof PROGRESSION_GUIDANCE === 'undefined') {
+        section.setAttribute('hidden', '');
+        return;
+      }
+      var data = (stage === 6) ? PROGRESSION_GUIDANCE.stage6 : PROGRESSION_GUIDANCE.generic;
+      if (!data) {
+        section.setAttribute('hidden', '');
+        return;
+      }
+
+      var pointsHtml = (data.points || []).map(function(p) {
+        return '<li class="progression-item">' +
+          '<span class="progression-dot" aria-hidden="true"></span>' +
+          '<span class="progression-text">' + p + '</span>' +
+          '</li>';
+      }).join('');
+
+      section.innerHTML =
+        '<div class="progression-card">' +
+          '<p class="progression-title">' + data.title + '</p>' +
+          '<p class="progression-intro">' + data.intro + '</p>' +
+          '<ul class="progression-list" aria-label="Progression guidance points">' +
+            pointsHtml +
+          '</ul>' +
+          '<p class="progression-reassurance">' + data.reassurance + '</p>' +
         '</div>';
 
       section.removeAttribute('hidden');
@@ -6442,6 +6548,15 @@
           ssGuidance.nextSteps.forEach(item => { text += `• ${item}\n`; });
         }
         text += '\n';
+      }
+
+      // Progression guidance (V2 Stage 7)
+      const ssProg = (typeof PROGRESSION_GUIDANCE !== 'undefined')
+        ? (r.stage === 6 ? PROGRESSION_GUIDANCE.stage6 : PROGRESSION_GUIDANCE.generic)
+        : null;
+      if (ssProg) {
+        text += `A NOTE ON YOUR STAGE\n`;
+        text += `${ssProg.reassurance}\n\n`;
       }
 
       // Help links
