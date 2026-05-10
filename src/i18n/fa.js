@@ -31,7 +31,8 @@ const CARESTAGE_I18N_FA = {
 
   /* ── Screen / section titles ─────────────────────────────── */
   support_directory:  "راهنمای خدمات حمایتی",
-  display_options:    "گزینه‌های نمایش",
+  settings:           "تنظیمات",
+  display_options:    "گزینه‌های نمایش",  // kept for backward compat
   privacy:            "حریم خصوصی",
   accessibility:      "دسترسی‌پذیری",
   your_result:        "نتیجه شما",

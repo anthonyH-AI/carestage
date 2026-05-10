@@ -3478,20 +3478,29 @@
       margin-top: 1px;
     }
 
-    /* ── Language switcher (landing, meta row) ────────── */
-    .lang-switcher {
+    /* ── Settings panel — section label ──────────────── */
+    .settings-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      padding: 16px 20px 8px;
+      border-top: 1px solid #f1f5f9;
+      margin: 0 -20px;        /* bleed to panel edges */
+    }
+    .settings-section-label:first-child {
+      border-top: none;
+      padding-top: 4px;
+    }
+    .settings-lang-row {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 10px;
+      gap: 8px;
+      padding: 0 0 4px;
       flex-wrap: wrap;
     }
-    .lang-switcher-label {
-      font-size: 12px;
-      color: #94a3b8;
-      margin-right: 4px;
-    }
+
+    /* ── Language buttons (inside Settings panel) ─────── */
     .lang-btn {
       background: none;
       border: 1px solid #e2e8f0;
@@ -3541,9 +3550,8 @@
       flex-direction: row-reverse;
     }
 
-    /* ── Print: hide language switcher and test banner ── */
+    /* ── Print: hide Settings panel and test banner ──── */
     @media print {
-      .lang-switcher,
       .i18n-test-banner { display: none !important; }
     }
   </style>
@@ -3685,7 +3693,7 @@
         <span class="sep" aria-hidden="true">·</span>
         <button class="btn-text-link" onclick="showAccessibility()" aria-label="Read the accessibility statement for this tool"><span data-i18n="accessibility">Accessibility</span></button>
         <span class="sep" aria-hidden="true">·</span>
-        <button class="btn-text-link" onclick="openAccessibilitySettings()" aria-label="Open display and reading options"><span data-i18n="display_options">Display options</span></button>
+        <button class="btn-text-link" onclick="openSettings()" aria-label="Open display, reading and language settings"><span data-i18n="settings">Settings</span></button>
         <span class="sep" aria-hidden="true">·</span>
         <button class="btn-text-link" onclick="showSafeguarding()" aria-label="Read the safeguarding and service boundary statement">Safeguarding</button>
         <span class="sep" aria-hidden="true">·</span>
@@ -3697,18 +3705,7 @@
         <a id="feedback-link" class="btn-text-link" href="#" target="_blank" rel="noopener noreferrer" aria-label="Give feedback about this tool (opens external link)" hidden>Give feedback</a>
       </div>
 
-      <!-- Language switcher (V2.5 Feature 5) — shown only when BRANDING.enableLanguageTest is true -->
-      <div class="lang-switcher" id="lang-switcher" hidden aria-label="Language selection">
-        <span class="lang-switcher-label" aria-hidden="true">&#127760;</span>
-        <button class="lang-btn" id="lang-btn-en" onclick="setLanguage('en')"
-          aria-pressed="true" aria-label="Switch to English">
-          English
-        </button>
-        <button class="lang-btn" id="lang-btn-fa" onclick="setLanguage('fa')"
-          aria-pressed="false" aria-label="Switch to Persian / Farsi" lang="fa">
-          فارسی
-        </button>
-      </div>
+      <!-- Language switcher lives inside the Settings panel (V2.5 Feature 5) -->
 
       <!-- Prominent feedback button (Stage 13) — shown only when BRANDING.feedbackUrl is set -->
       <a id="landing-feedback-btn" class="landing-feedback-btn" href="#" target="_blank" rel="noopener noreferrer" hidden aria-label="Give feedback on this tool (opens external link)">
@@ -6680,7 +6677,7 @@
     let _a11ySettings = Object.assign({}, A11Y_DEFAULTS);
     let _a11yTriggerEl = null; // element that opened the panel, to restore focus on close
 
-    function openAccessibilitySettings() {
+    function openSettings() {
       _a11yTriggerEl = document.activeElement || null;
       const overlay = document.getElementById('a11y-overlay');
       overlay.removeAttribute('hidden');
@@ -6693,10 +6690,12 @@
       if (closeBtn) closeBtn.focus();
       // Listen for Escape and focus-trap
       overlay.addEventListener('keydown', _a11yKeyHandler);
-      logEvent('accessibility_settings_opened');
+      logEvent('settings_opened');
     }
+    // Backward-compatible alias
+    function openAccessibilitySettings() { openSettings(); }
 
-    function closeAccessibilitySettings() {
+    function closeSettings() {
       const overlay = document.getElementById('a11y-overlay');
       overlay.setAttribute('hidden', '');
       overlay.removeEventListener('keydown', _a11yKeyHandler);
@@ -6705,10 +6704,12 @@
         _a11yTriggerEl.focus();
       }
     }
+    // Backward-compatible alias
+    function closeAccessibilitySettings() { closeSettings(); }
 
     function _a11yKeyHandler(e) {
       if (e.key === 'Escape') {
-        closeAccessibilitySettings();
+        closeSettings();
         return;
       }
       // Focus trap: keep Tab inside the panel
@@ -6885,11 +6886,11 @@
     }
 
     function initI18n() {
-      // Show switcher only when feature flag is enabled
-      var switcher = document.getElementById('lang-switcher');
-      if (switcher) {
+      // Show language section inside Settings panel only when feature flag is enabled
+      var langSection = document.getElementById('settings-lang-section');
+      if (langSection) {
         var enabled = typeof BRANDING !== 'undefined' && BRANDING.enableLanguageTest === true;
-        switcher.hidden = !enabled;
+        langSection.hidden = !enabled;
       }
 
       var lang = getCurrentLanguage();
@@ -8775,7 +8776,7 @@
         <p style="margin-top:12px;font-weight:600;color:#1e293b;">If you use the contingency planner</p>
         <p>The contingency planner (&ldquo;If you suddenly needed help&rdquo;) stores what you type — such as contact names, routine notes, and medication timing — on this device only. This information is <strong>not</strong> anonymous; it is personal to your situation. It is never sent anywhere. You can delete it at any time using the &ldquo;Clear all&rdquo; button inside the planner.</p>
         <p style="margin-top:12px;font-weight:600;color:#1e293b;">Display and reading options</p>
-        <p>If you use the display and reading options panel, your choices (such as larger text or reduced motion) are saved on this device only. These settings contain no personal information. They are cleared if you clear your browser storage.</p>
+        <p>If you use the Settings panel, your choices (such as larger text, reduced motion, or language) are saved on this device only. These settings contain no personal information. They are cleared if you clear your browser storage.</p>
       </div>
 
       <div class="info-section">
@@ -8841,8 +8842,8 @@
 
       <div class="info-section">
         <p class="info-section-title">Display and reading options</p>
-        <p>This tool includes built-in display adjustments you can turn on without changing your device settings. Open them using the &ldquo;Display options&rdquo; link on the home screen. Options include larger text, extra spacing, simplified view, reduced motion, high contrast, and a dyslexia-friendly font.</p>
-        <button class="btn-text-link" onclick="closeAccessibility(); openAccessibilitySettings();" style="font-size:14px;margin-top:4px;">Open display options</button>
+        <p>This tool includes built-in display adjustments you can turn on without changing your device settings. Open them using the &ldquo;Settings&rdquo; link on the home screen. Options include larger text, extra spacing, simplified view, reduced motion, high contrast, and a dyslexia-friendly font.</p>
+        <button class="btn-text-link" onclick="closeAccessibility(); openSettings();" style="font-size:14px;margin-top:4px;">Open settings</button>
       </div>
 
       <div class="info-section">
@@ -9489,14 +9490,18 @@
   <!-- ═══════════════════════════════════════════════════
        ACCESSIBILITY SETTINGS PANEL — V2.5 Feature 2
   ════════════════════════════════════════════════════ -->
+  <!-- Settings panel (combined display options + language, V2.5) -->
   <div class="a11y-overlay" id="a11y-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="a11y-title">
     <div class="a11y-panel" role="document">
       <div class="a11y-panel-header">
-        <h2 class="a11y-panel-title" id="a11y-title">Display and reading options</h2>
-        <button class="a11y-close-btn" id="a11y-close-btn" onclick="closeAccessibilitySettings()" aria-label="Close display options">&#x2715;</button>
+        <h2 class="a11y-panel-title" id="a11y-title">Settings</h2>
+        <button class="a11y-close-btn" id="a11y-close-btn" onclick="closeSettings()" aria-label="Close settings">&#x2715;</button>
       </div>
 
       <div class="a11y-panel-body">
+
+        <!-- ── Display and reading ─────────────────────── -->
+        <p class="settings-section-label">Display and reading</p>
 
         <div class="a11y-setting">
           <div class="a11y-setting-info">
@@ -9570,11 +9575,29 @@
           </button>
         </div>
 
+        <!-- ── Language — shown only when enableLanguageTest is true ── -->
+        <div id="settings-lang-section" hidden>
+          <p class="settings-section-label">Language</p>
+          <div class="settings-lang-row">
+            <button class="lang-btn" id="lang-btn-en" onclick="setLanguage('en')"
+              aria-pressed="true" aria-label="Switch to English">
+              English
+            </button>
+            <button class="lang-btn" id="lang-btn-fa" onclick="setLanguage('fa')"
+              aria-pressed="false" aria-label="Switch to Persian / Farsi" lang="fa">
+              فارسی
+            </button>
+          </div>
+          <p style="font-size:12px;color:#94a3b8;line-height:1.5;margin-top:8px;">
+            Translation test mode — content requires review before public use.
+          </p>
+        </div>
+
       </div><!-- /.a11y-panel-body -->
 
       <div class="a11y-panel-footer">
-        <p class="a11y-privacy-note">Your display preferences are saved on this device only.</p>
-        <button class="btn-outline" onclick="resetAccessibilitySettings()" style="margin-top:10px;width:100%;">Reset to defaults</button>
+        <p class="a11y-privacy-note">Your display preferences and language choice are saved on this device only.</p>
+        <button class="btn-outline" onclick="resetAccessibilitySettings()" style="margin-top:10px;width:100%;">Reset display to defaults</button>
       </div>
     </div>
   </div>

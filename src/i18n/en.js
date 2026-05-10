@@ -31,7 +31,8 @@ const CARESTAGE_I18N_EN = {
 
   /* ── Screen / section titles ─────────────────────────────── */
   support_directory:  "Support directory",
-  display_options:    "Display options",
+  settings:           "Settings",
+  display_options:    "Display options",  // kept for backward compat — use 'settings' for the panel entry point
   privacy:            "Privacy",
   accessibility:      "Accessibility",
   your_result:        "Your result",
