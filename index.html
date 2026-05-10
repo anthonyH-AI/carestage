@@ -3361,6 +3361,189 @@
     .cp-save-status.saving { color: #94a3b8; }
     .cp-save-status.empty  { color: #94a3b8; }
     .cp-print-header { display: none; }
+
+    /* ══════════════════════════════════════════════════
+       RTL LAYOUT — V2.5 Feature 5 (Farsi / fa)
+       Applied when body has class .rtl-layout
+    ═════════════════════════════════════════════════ */
+
+    body.rtl-layout {
+      direction: rtl;
+      text-align: right;
+    }
+
+    /* Screen nav: flip Back button direction */
+    body.rtl-layout .btn-back {
+      flex-direction: row-reverse;
+    }
+    body.rtl-layout .btn-back svg {
+      transform: scaleX(-1);
+    }
+
+    /* Primary / secondary / outline buttons: flip arrow icons */
+    body.rtl-layout .btn-primary svg,
+    body.rtl-layout .btn-secondary svg,
+    body.rtl-layout .btn-action svg {
+      transform: scaleX(-1);
+    }
+
+    /* Landing screen — keep centred */
+    body.rtl-layout #screen-landing {
+      text-align: center;
+    }
+
+    /* Meta links: wrap and centre stays fine in RTL */
+    body.rtl-layout .landing-meta-links {
+      direction: rtl;
+    }
+
+    /* Result and card text alignment */
+    body.rtl-layout .result-section-label,
+    body.rtl-layout .result-meaning,
+    body.rtl-layout .result-steps-list,
+    body.rtl-layout .result-help-list,
+    body.rtl-layout .resource-card,
+    body.rtl-layout .stage-rec-card,
+    body.rtl-layout .weekly-pathway-body,
+    body.rtl-layout .contingency-prompt-item {
+      text-align: right;
+    }
+
+    /* Flex rows: reverse in RTL */
+    body.rtl-layout .result-action-section,
+    body.rtl-layout .cp-save-bar,
+    body.rtl-layout .result-share-row {
+      flex-direction: row-reverse;
+    }
+
+    /* Lists: RTL bullet positioning */
+    body.rtl-layout .result-steps-list li,
+    body.rtl-layout .result-help-list li {
+      padding-left: 0;
+      padding-right: 18px;
+    }
+    body.rtl-layout .result-steps-list li::before,
+    body.rtl-layout .result-help-list li::before {
+      left: auto;
+      right: 0;
+    }
+
+    /* Bucket items inside weekly pathway */
+    body.rtl-layout .wp-bucket-items li {
+      padding-left: 0;
+      padding-right: 20px;
+    }
+    body.rtl-layout .wp-bucket-items li::before {
+      left: auto;
+      right: 0;
+    }
+
+    /* Weekly pathway summary row */
+    body.rtl-layout .wp-summary-left {
+      flex-direction: row-reverse;
+    }
+
+    /* Help bar: keep centred, flip icon */
+    body.rtl-layout .help-now-btn {
+      flex-direction: row-reverse;
+    }
+
+    /* Screen nav title stays naturally right in RTL */
+    body.rtl-layout .screen-nav {
+      direction: rtl;
+    }
+
+    /* Action plan toggle row */
+    body.rtl-layout .action-plan-item {
+      text-align: right;
+    }
+
+    /* Input / textarea */
+    body.rtl-layout input,
+    body.rtl-layout textarea,
+    body.rtl-layout select {
+      direction: rtl;
+      text-align: right;
+    }
+
+    /* Language test mode: bilingual label styling */
+    .i18n-en-label {
+      display: block;
+      font-size: 0.75em;
+      color: #94a3b8;
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: 1.3;
+      margin-top: 1px;
+    }
+
+    /* ── Language switcher (landing, meta row) ────────── */
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .lang-switcher-label {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-right: 4px;
+    }
+    .lang-btn {
+      background: none;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 13px;
+      color: #475569;
+      cursor: pointer;
+      line-height: 1.4;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+      font-family: inherit;
+    }
+    .lang-btn:hover {
+      border-color: #0f766e;
+      color: #0f766e;
+    }
+    .lang-btn[aria-pressed="true"] {
+      background: #0f766e;
+      border-color: #0f766e;
+      color: #fff;
+      font-weight: 600;
+    }
+    .lang-btn:focus-visible {
+      outline: 3px solid #0f766e;
+      outline-offset: 3px;
+    }
+
+    /* ── Translation test banner ──────────────────────── */
+    .i18n-test-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: #fefce8;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #713f12;
+      line-height: 1.5;
+      width: 100%;
+      text-align: left;
+    }
+    body.rtl-layout .i18n-test-banner {
+      text-align: right;
+      flex-direction: row-reverse;
+    }
+
+    /* ── Print: hide language switcher and test banner ── */
+    @media print {
+      .lang-switcher,
+      .i18n-test-banner { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -3376,7 +3559,7 @@
           <path d="M9 6v4M9 13h.01" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
           <path d="M1.5 9a7.5 7.5 0 1 0 15 0 7.5 7.5 0 0 0-15 0z" stroke="currentColor" stroke-width="2"/>
         </svg>
-        Get help now
+        <span data-i18n="get_help_now">Get help now</span>
       </button>
     </div>
   </div>
@@ -3422,6 +3605,15 @@
         <p><strong>Not for emergencies.</strong> If someone is in immediate danger, call <strong>999</strong>.</p>
       </div>
 
+      <!-- i18n test banner — shown only when Farsi is active (V2.5 Feature 5) -->
+      <div class="i18n-test-banner" id="i18n-test-banner" hidden role="note" aria-label="Translation test mode notice">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="flex-shrink:0;margin-top:1px;">
+          <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M8 5v3.5M8 11h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <span>Translation test mode. Content requires review before public use.</span>
+      </div>
+
       <div class="brand-mark" aria-label="CareStage">
         <!-- CareStage logo mark — 4 rising bars + dot, blue-to-teal gradient -->
         <svg viewBox="0 0 66 52" fill="none" aria-hidden="true" focusable="false">
@@ -3447,7 +3639,7 @@
         what to focus on next, and where to get support in Solihull.
       </p>
       <button class="btn-primary" onclick="startCheck()" aria-label="Start the check — 7 questions, takes about 2 minutes">
-        Start Check
+        <span data-i18n="start">Start</span>
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
           <path d="M4 9h10M9 4l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -3487,11 +3679,11 @@
       <div class="landing-meta-links">
         <button class="btn-text-link" onclick="showAbout()" aria-label="Learn what this tool can and cannot do">About this tool</button>
         <span class="sep" aria-hidden="true">·</span>
-        <button class="btn-text-link" onclick="showPrivacy()" aria-label="Read the privacy information for this tool">Privacy</button>
+        <button class="btn-text-link" onclick="showPrivacy()" aria-label="Read the privacy information for this tool"><span data-i18n="privacy">Privacy</span></button>
         <span class="sep" aria-hidden="true">·</span>
-        <button class="btn-text-link" onclick="showAccessibility()" aria-label="Read the accessibility statement for this tool">Accessibility</button>
+        <button class="btn-text-link" onclick="showAccessibility()" aria-label="Read the accessibility statement for this tool"><span data-i18n="accessibility">Accessibility</span></button>
         <span class="sep" aria-hidden="true">·</span>
-        <button class="btn-text-link" onclick="openAccessibilitySettings()" aria-label="Open display and reading options">Display options</button>
+        <button class="btn-text-link" onclick="openAccessibilitySettings()" aria-label="Open display and reading options"><span data-i18n="display_options">Display options</span></button>
         <span class="sep" aria-hidden="true">·</span>
         <button class="btn-text-link" onclick="showSafeguarding()" aria-label="Read the safeguarding and service boundary statement">Safeguarding</button>
         <span class="sep" aria-hidden="true">·</span>
@@ -3501,6 +3693,19 @@
         <!-- Give feedback link — shown only when BRANDING.feedbackUrl is set -->
         <span class="sep" id="feedback-link-sep" aria-hidden="true" hidden>·</span>
         <a id="feedback-link" class="btn-text-link" href="#" target="_blank" rel="noopener noreferrer" aria-label="Give feedback about this tool (opens external link)" hidden>Give feedback</a>
+      </div>
+
+      <!-- Language switcher (V2.5 Feature 5) — shown only when BRANDING.enableLanguageTest is true -->
+      <div class="lang-switcher" id="lang-switcher" hidden aria-label="Language selection">
+        <span class="lang-switcher-label" aria-hidden="true">&#127760;</span>
+        <button class="lang-btn" id="lang-btn-en" onclick="setLanguage('en')"
+          aria-pressed="true" aria-label="Switch to English">
+          English
+        </button>
+        <button class="lang-btn" id="lang-btn-fa" onclick="setLanguage('fa')"
+          aria-pressed="false" aria-label="Switch to Persian / Farsi" lang="fa">
+          فارسی
+        </button>
       </div>
 
       <!-- Prominent feedback button (Stage 13) — shown only when BRANDING.feedbackUrl is set -->
@@ -3565,7 +3770,7 @@
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
             <path d="M14 9H4M9 4L4 9l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Back
+          <span data-i18n="back">Back</span>
         </button>
       </nav>
 
@@ -3599,7 +3804,7 @@
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
             <path d="M14 9H4M9 4L4 9l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Back
+          <span data-i18n="back">Back</span>
         </button>
       </nav>
       <div class="progress-section">
@@ -3708,7 +3913,7 @@
           <path d="M9 8v4M9 6h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
         <div>
-          <strong>Professional mode</strong> — Use the agreed next step and follow-up prompts below to structure the conversation.
+          <strong data-i18n="professional_mode">Professional mode</strong> — Use the agreed next step and follow-up prompts below to structure the conversation.
         </div>
       </div>
 
@@ -3747,7 +3952,7 @@
 
       <!-- What this means -->
       <div class="result-section">
-        <p class="result-section-label">What this means</p>
+        <p class="result-section-label" data-i18n="what_this_means">What this means</p>
         <p class="result-meaning" id="result-meaning"></p>
         <!-- V2 Stage 1: condition shown quietly below meaning -->
         <p class="result-condition" id="result-condition" hidden aria-live="polite">
@@ -3780,7 +3985,7 @@
 
       <!-- What to do next -->
       <div class="result-section">
-        <p class="result-section-label">What to do next</p>
+        <p class="result-section-label" data-i18n="suggested_next_steps">What to do next</p>
         <ul class="result-steps-list" id="result-steps" aria-label="Suggested next steps"></ul>
       </div>
 
@@ -3841,7 +4046,7 @@
           <summary>
             <span class="wp-summary-left">
               <span class="wp-icon" aria-hidden="true">📅</span>
-              <span>Ideas for this week</span>
+              <span data-i18n="over_next_7_days">Ideas for this week</span>
             </span>
             <svg class="wp-chevron" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
               <path d="M4 6l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -3970,7 +4175,7 @@
       <!-- Where to get help (with links) -->
       <div class="result-section">
         <div class="result-help-card">
-          <p class="result-section-label" style="margin-bottom:14px;">Where to get help</p>
+          <p class="result-section-label" style="margin-bottom:14px;" data-i18n="where_to_get_help">Where to get help</p>
           <ul class="result-help-list" id="result-help" aria-label="Where to get help"></ul>
         </div>
 
@@ -4084,7 +4289,7 @@
             <path d="M4 11v2h7v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="11" cy="8" r="0.75" fill="currentColor"/>
           </svg>
-          Print Carer Roadmap
+          <span data-i18n="print_roadmap">Print Carer Roadmap</span>
         </button>
       </div>
       <div class="copy-success" id="copy-success" hidden aria-live="polite" aria-atomic="true">
@@ -4111,7 +4316,7 @@
           <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
           <path d="M5 6h6M5 9h6M5 12h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
-        Session summary
+        <span data-i18n="session_summary">Session summary</span>
       </button>
 
       <!-- Restart -->
@@ -4121,7 +4326,7 @@
             <path d="M2 8a6 6 0 1 1 1.5 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             <path d="M2 12V8h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Check in again
+          <span data-i18n="restart">Check in again</span>
         </button>
       </div>
 
@@ -4139,9 +4344,9 @@
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
             <path d="M14 9H4M9 4L4 9l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Back
+          <span data-i18n="back">Back</span>
         </button>
-        <span class="screen-nav-title">Support Directory</span>
+        <span class="screen-nav-title" data-i18n="support_directory">Support directory</span>
       </nav>
 
       <p class="location-note">
@@ -4192,11 +4397,11 @@
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
             <path d="M14 9H4M9 4L4 9l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Back
+          <span data-i18n="back">Back</span>
         </button>
       </nav>
 
-      <h2 style="font-size:clamp(22px,5.5vw,28px);font-weight:700;color:#0f172a;margin-bottom:20px;">Get help now</h2>
+      <h2 style="font-size:clamp(22px,5.5vw,28px);font-weight:700;color:#0f172a;margin-bottom:20px;" data-i18n="get_help_now">Get help now</h2>
 
       <div class="urgent-help-top-card" role="alert">
         <div class="urgent-help-top-icon" aria-hidden="true">
@@ -4253,6 +4458,8 @@
   <!-- Content and config — edit these files, not index.html -->
   <script src="src/config/admin.js"></script>
   <script src="src/config/branding.js?v=13"></script>
+  <script src="src/i18n/en.js"></script>
+  <script src="src/i18n/fa.js"></script>
   <script src="src/content/helpLinks.js"></script>
   <script src="src/content/questions.js"></script>
   <script src="src/content/conditions.js"></script>
@@ -6582,6 +6789,114 @@
     }
 
     /* ══════════════════════════════════════════════════
+       V2.5 FEATURE 5 — MULTILINGUAL / i18n
+       English remains default. Farsi is a test layer.
+       Language preference: localStorage mcsc_language_preference
+       Switcher visible only when BRANDING.enableLanguageTest === true.
+    ══════════════════════════════════════════════════ */
+
+    var _I18N_STORAGE_KEY = 'mcsc_language_preference';
+    var _SUPPORTED_LANGS  = ['en', 'fa'];
+
+    function getCurrentLanguage() {
+      try {
+        var stored = localStorage.getItem(_I18N_STORAGE_KEY);
+        if (stored && _SUPPORTED_LANGS.indexOf(stored) !== -1) return stored;
+      } catch (e) {}
+      return 'en';
+    }
+
+    function setLanguage(lang) {
+      if (_SUPPORTED_LANGS.indexOf(lang) === -1) lang = 'en';
+      try {
+        localStorage.setItem(_I18N_STORAGE_KEY, lang);
+      } catch (e) {
+        console.warn('[MCSC i18n] Could not save language preference:', e);
+      }
+      _applyLangAttributes(lang);
+      applyTranslations();
+      _updateLangSwitcherUI(lang);
+      logEvent('language_changed', { lang: lang });
+    }
+
+    function t(key, fallback) {
+      var lang  = getCurrentLanguage();
+      var pack  = lang === 'fa' && typeof CARESTAGE_I18N_FA !== 'undefined'
+                    ? CARESTAGE_I18N_FA
+                    : typeof CARESTAGE_I18N_EN !== 'undefined' ? CARESTAGE_I18N_EN : null;
+      if (pack && pack[key] !== undefined) return pack[key];
+      if (typeof CARESTAGE_I18N_EN !== 'undefined' && CARESTAGE_I18N_EN[key] !== undefined) {
+        return CARESTAGE_I18N_EN[key];
+      }
+      return fallback !== undefined ? fallback : key;
+    }
+
+    function applyTranslations() {
+      var lang   = getCurrentLanguage();
+      var isFa   = lang === 'fa';
+      var faPack = typeof CARESTAGE_I18N_FA !== 'undefined' ? CARESTAGE_I18N_FA : {};
+      var enPack = typeof CARESTAGE_I18N_EN !== 'undefined' ? CARESTAGE_I18N_EN : {};
+      var pack   = isFa ? faPack : enPack;
+
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var key = el.getAttribute('data-i18n');
+        var translation = pack[key];
+        if (!translation) return; // keep existing text if key missing
+
+        if (isFa) {
+          // Bilingual: Farsi label first, then smaller muted English below
+          var enText = enPack[key] || '';
+          el.innerHTML = _escHtml(translation) +
+            (enText ? '<span class="i18n-en-label">' + _escHtml(enText) + '</span>' : '');
+        } else {
+          // English-only: plain text, clear any previous bilingual HTML
+          el.textContent = translation;
+        }
+      });
+
+      // Show / hide translation test banner
+      var banner = document.getElementById('i18n-test-banner');
+      if (banner) banner.hidden = !isFa;
+    }
+
+    function _applyLangAttributes(lang) {
+      var isFa = lang === 'fa';
+      document.documentElement.setAttribute('lang', lang);
+      document.documentElement.setAttribute('dir', isFa ? 'rtl' : 'ltr');
+      document.body.classList.toggle('rtl-layout', isFa);
+      document.body.setAttribute('data-lang', lang);
+    }
+
+    function _updateLangSwitcherUI(lang) {
+      var btnEn = document.getElementById('lang-btn-en');
+      var btnFa = document.getElementById('lang-btn-fa');
+      if (btnEn) btnEn.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false');
+      if (btnFa) btnFa.setAttribute('aria-pressed', lang === 'fa' ? 'true' : 'false');
+    }
+
+    function _escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function initI18n() {
+      // Show switcher only when feature flag is enabled
+      var switcher = document.getElementById('lang-switcher');
+      if (switcher) {
+        var enabled = typeof BRANDING !== 'undefined' && BRANDING.enableLanguageTest === true;
+        switcher.hidden = !enabled;
+      }
+
+      var lang = getCurrentLanguage();
+      _applyLangAttributes(lang);
+      applyTranslations();
+      _updateLangSwitcherUI(lang);
+    }
+
+    /* ══════════════════════════════════════════════════
        STAGE 11 — PROFESSIONAL MODE
     ══════════════════════════════════════════════════ */
 
@@ -8173,6 +8488,7 @@
     }
     applyBranding();
     loadAccessibilitySettings();
+    initI18n();   /* V2.5 Feature 5 — must run after branding so flag is readable */
 
     /* ── Stage 15: call renderWhatsNew after branding ─ */
     renderWhatsNew();
@@ -9066,7 +9382,7 @@
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
             <path d="M11 4l-5 5 5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Back
+          <span data-i18n="back">Back</span>
         </button>
       </nav>
 
@@ -9080,7 +9396,7 @@
         </p>
       </div>
 
-      <h1 style="font-size:clamp(20px,4vw,26px);font-weight:800;color:#0f172a;margin-bottom:6px;line-height:1.25;">
+      <h1 style="font-size:clamp(20px,4vw,26px);font-weight:800;color:#0f172a;margin-bottom:6px;line-height:1.25;" data-i18n="if_suddenly_needed_help">
         If you suddenly needed help
       </h1>
       <p style="font-size:15px;color:#475569;line-height:1.6;margin-bottom:20px;max-width:560px;">
@@ -9115,10 +9431,10 @@
             <path d="M4 11v2h7v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="11" cy="8" r="0.75" fill="currentColor"/>
           </svg>
-          Print plan
+          <span data-i18n="print_plan">Print plan</span>
         </button>
         <button class="btn-text-link danger" onclick="clearContingencyPlan()" aria-label="Clear all entries in your contingency plan">
-          Clear all
+          <span data-i18n="clear_all">Clear all</span>
         </button>
       </div>
 

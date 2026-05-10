@@ -68,6 +68,12 @@ const BRANDING = {
   // enableConversationMode: set to false to hide the "Use with someone" toggle
   enableConversationMode: true,
 
+  /* ── Language test (V2.5 Feature 5) ──────────────────────── */
+  // enableLanguageTest: set to true to show the language switcher (en / fa).
+  // This is a testing feature only — all translations require human review
+  // before being shown to the public. Set to false (default) for production.
+  enableLanguageTest: false,
+
   /* ── Launch mode ──────────────────────────────────────────── */
   // 'soft'   → shows a testing banner on the landing screen
   // 'public' → no banner; production mode
